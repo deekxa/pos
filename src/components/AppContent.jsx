@@ -8,8 +8,8 @@ import Navbar from '@/components/Layout/Navbar'
 
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* <Sidebar /> */}
+    <div className="min-h-screen ">
+   
       <Navbar />
       <main className="ml-64 pt-16 p-8 min-h-screen">
         {children}

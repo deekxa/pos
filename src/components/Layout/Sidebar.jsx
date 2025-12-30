@@ -39,17 +39,11 @@ export default function Sidebar() {
   }
   
   return (
-    <aside className="w-[280px] bg-gradient-to-b from-[#0f0f0f] via-[#0a0a0a] to-black h-screen flex flex-col border-r border-white/[0.08] relative overflow-hidden">
+    <aside className="w-[280px] bg-gradient-to-b from-[#0f0f0f] via-[#0a0a0a] to-black h-screen flex flex-col border-r border-white/[0.08]">
       
-      
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px]" />
-      
-      
-      <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-      
-      <div className="flex flex-col h-full relative z-10">
+      <div className="flex flex-col h-full">
         
-        
+        {/* Logo Area */}
         <div className="px-6 py-6">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 bg-gradient-to-br from-white to-gray-200 rounded-xl flex items-center justify-center shadow-lg">
@@ -62,7 +56,7 @@ export default function Sidebar() {
           </div>
         </div>
         
-        
+        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none">
           <div className="space-y-1.5">
             {filteredMenu.map((item) => {
@@ -95,7 +89,7 @@ export default function Sidebar() {
           </div>
         </nav>
         
-        
+        {/* User Profile */}
         <div className="p-4 border-t border-white/[0.06]">
           <div className="bg-white/[0.05] backdrop-blur-xl rounded-xl p-3.5 mb-3 border border-white/[0.08]">
             <div className="flex items-center gap-3">
