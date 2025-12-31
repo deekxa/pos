@@ -58,7 +58,7 @@ export default function ViewPurchasePage() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-3xl mx-auto">
           
-          {/* Header */}
+    
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <button
@@ -90,10 +90,8 @@ export default function ViewPurchasePage() {
             </div>
           </div>
 
-          {/* Purchase Card */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-            
-            {/* Amount Banner */}
+         
             <div className="px-6 py-10 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
               <div className="text-center">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Purchase Amount</p>
@@ -105,10 +103,9 @@ export default function ViewPurchasePage() {
               </div>
             </div>
 
-            {/* Purchase Info */}
+           
             <div className="p-6 space-y-6">
-              
-              {/* Status Badge */}
+             
               <div className="flex items-center gap-2">
                 <span className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium ${
                   purchase.status === 'Delivered' ? 'bg-gray-900 text-white' :
@@ -119,7 +116,6 @@ export default function ViewPurchasePage() {
                 </span>
               </div>
 
-              {/* Details Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 
                 <div className="flex items-start gap-3 group">
@@ -163,7 +159,6 @@ export default function ViewPurchasePage() {
                 </div>
               </div>
 
-              {/* Items Description */}
               <div className="pt-4 border-t border-gray-100">
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Items</p>
                 <p className="text-sm text-gray-700 leading-relaxed">{purchase.items}</p>
@@ -172,7 +167,7 @@ export default function ViewPurchasePage() {
           </div>
         </div>
 
-        {/* Delete Confirmation Modal */}
+   
         {deleteModal && (
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl animate-in zoom-in duration-200">

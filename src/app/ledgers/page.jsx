@@ -106,7 +106,6 @@ export default function LedgersPage() {
     <ProtectedRoute allowedRoles={['admin', 'branch_head']}>
       <div className="space-y-6">
         
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">Financial Ledger</h1>
@@ -132,7 +131,6 @@ export default function LedgersPage() {
           </div>
         </div>
 
-        {/* Financial Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -158,7 +156,6 @@ export default function LedgersPage() {
           </div>
         </div>
 
-        {/* Toolbar */}
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
@@ -182,7 +179,6 @@ export default function LedgersPage() {
             </button>
           </div>
 
-          {/* Advanced Filters */}
           {showFilters && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-4 pt-4 border-t border-gray-200">
               <div>
@@ -243,7 +239,6 @@ export default function LedgersPage() {
           )}
         </div>
 
-        {/* Transactions Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -310,7 +305,6 @@ export default function LedgersPage() {
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="border-t border-gray-200 px-4 py-3 flex items-center justify-between">
               <div className="text-sm text-gray-500">

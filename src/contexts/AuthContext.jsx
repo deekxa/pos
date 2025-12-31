@@ -21,7 +21,6 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  // Session expires after 30 minutes (1800000 ms)
   const SESSION_DURATION = 30 * 60 * 1000
 
   const login = (email, password) => {

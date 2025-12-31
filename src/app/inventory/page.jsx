@@ -196,7 +196,6 @@ export default function InventoryPage() {
   return (
     <ProtectedRoute allowedRoles={["admin", "branch_head"]}>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">Inventory</h1>
@@ -222,7 +221,6 @@ export default function InventoryPage() {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -310,7 +308,6 @@ export default function InventoryPage() {
             )}
           </div>
 
-          {/* Filters Panel */}
           {showFilters && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-200">
               <div>
@@ -352,7 +349,6 @@ export default function InventoryPage() {
           )}
         </div>
 
-        {/* Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -480,7 +476,6 @@ export default function InventoryPage() {
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="border-t border-gray-200 px-4 py-3 flex items-center justify-between">
               <div className="text-sm text-gray-500">

@@ -71,7 +71,6 @@ export default function BranchesPage() {
     <ProtectedRoute allowedRoles={['admin']}>
       <div className="space-y-6">
         
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">Branches</h1>
@@ -85,12 +84,10 @@ export default function BranchesPage() {
           </button>
         </div>
 
-        {/* Branches Grid */}
         <div className="grid grid-cols-1 gap-6">
           {branches.map(branch => (
             <div key={branch.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               
-              {/* Branch Header */}
               <div className="p-6 bg-gray-50 border-b border-gray-200">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -147,7 +144,6 @@ export default function BranchesPage() {
                 </div>
               </div>
 
-              {/* Organization Structure */}
               <div className="p-6">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
                   Organization Structure
@@ -173,7 +169,6 @@ export default function BranchesPage() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
       {deleteModal.show && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">

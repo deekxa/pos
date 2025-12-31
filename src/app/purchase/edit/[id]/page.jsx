@@ -87,7 +87,7 @@ export default function EditPurchasePage() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-3xl mx-auto">
           
-          {/* Header */}
+        
           <div className="flex items-center gap-4 mb-6">
             <button
               onClick={() => router.push(`/purchase/view/${purchaseId}`)}
@@ -101,11 +101,9 @@ export default function EditPurchasePage() {
             </div>
           </div>
 
-          {/* Form */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-5">
-              
-              {/* Date & Reference */}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -137,7 +135,6 @@ export default function EditPurchasePage() {
                 </div>
               </div>
 
-              {/* Supplier */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Supplier Name <span className="text-red-500">*</span>
@@ -153,7 +150,7 @@ export default function EditPurchasePage() {
                 />
               </div>
 
-              {/* Items Description */}
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Items Description <span className="text-red-500">*</span>
@@ -169,7 +166,7 @@ export default function EditPurchasePage() {
                 />
               </div>
 
-              {/* Amount & Status */}
+           
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -209,7 +206,7 @@ export default function EditPurchasePage() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+          
               <div className="flex gap-3 pt-4 border-t border-gray-200">
                 <button
                   type="button"

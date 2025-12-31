@@ -67,7 +67,7 @@ export default function AllTransactionsPage() {
     <ProtectedRoute allowedRoles={['admin', 'branch_head']}>
       <div className="space-y-6">
         
-        {/* Header */}
+       
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
@@ -92,7 +92,7 @@ export default function AllTransactionsPage() {
           </button>
         </div>
 
-        {/* Search & Filter */}
+      
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
@@ -134,7 +134,7 @@ export default function AllTransactionsPage() {
           )}
         </div>
 
-        {/* Transactions Table */}
+      
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -186,7 +186,6 @@ export default function AllTransactionsPage() {
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="border-t border-gray-100 px-4 py-3.5 flex items-center justify-between bg-gray-50">
               <div className="text-sm text-gray-600">

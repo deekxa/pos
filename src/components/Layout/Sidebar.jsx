@@ -39,14 +39,14 @@ export default function Sidebar() {
   }
   
   return (
-    <aside className="w-[280px] bg-gradient-to-b from-[#0f0f0f] via-[#0a0a0a] to-black h-screen flex flex-col border-r border-white/[0.08]">
+    <aside className="w-[280px] bg-linear-to-b from-[#0f0f0f] via-[#0a0a0a] to-black h-screen flex flex-col border-r border-white/[0.08]">
       
       <div className="flex flex-col h-full">
         
-        {/* Logo Area */}
+       
         <div className="px-6 py-6">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-gradient-to-br from-white to-gray-200 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-11 h-11 bg-linear-to-br from-white to-gray-200 rounded-xl flex items-center justify-center shadow-lg">
               <Store className="w-6 h-6 text-black" strokeWidth={2.5} />
             </div>
             <div>
@@ -56,7 +56,7 @@ export default function Sidebar() {
           </div>
         </div>
         
-        {/* Navigation */}
+       
         <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none">
           <div className="space-y-1.5">
             {filteredMenu.map((item) => {
@@ -89,12 +89,12 @@ export default function Sidebar() {
           </div>
         </nav>
         
-        {/* User Profile */}
+      
         <div className="p-4 border-t border-white/[0.06]">
           <div className="bg-white/[0.05] backdrop-blur-xl rounded-xl p-3.5 mb-3 border border-white/[0.08]">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-11 h-11 bg-gradient-to-br from-white to-gray-200 rounded-full flex items-center justify-center text-black text-sm font-black shadow-lg">
+                <div className="w-11 h-11 bg-linear-to-br from-white to-gray-200 rounded-full flex items-center justify-center text-black text-sm font-black shadow-lg">
                   {user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-[#0a0a0a] shadow-lg" />
@@ -103,7 +103,7 @@ export default function Sidebar() {
                 <p className="text-sm font-bold text-white truncate">{user?.name}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-[11px] text-gray-500 truncate font-medium">{user?.branch}</span>
-                  <span className="px-2 py-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 text-[9px] font-black rounded-md uppercase tracking-wider border border-blue-500/20">
+                  <span className="px-2 py-0.5 bg-linear-to-r from-blue-500/20 to-purple-500/20 text-blue-400 text-[9px] font-black rounded-md uppercase tracking-wider border border-blue-500/20">
                     {user?.role?.replace('_', ' ')}
                   </span>
                 </div>

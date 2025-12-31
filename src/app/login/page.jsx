@@ -41,11 +41,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-white flex">
       
-      {/* Left Side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           
-          {/* Logo */}
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
@@ -60,14 +58,12 @@ export default function LoginPage() {
             <p className="text-gray-600">Enter your credentials to continue</p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 rounded-lg text-red-600 text-sm">
               {error}
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -115,7 +111,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right Side - Demo Accounts */}
       <div className="hidden lg:flex w-[480px] bg-gray-50 border-l border-gray-200 p-8 flex-col">
         <div className="flex-1 flex flex-col justify-center">
           <div className="mb-8">
@@ -157,7 +152,6 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Mobile Demo Accounts */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
         <details className="group">
           <summary className="text-sm font-medium text-gray-900 cursor-pointer list-none flex items-center justify-between">

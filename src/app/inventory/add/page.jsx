@@ -47,7 +47,6 @@ export default function AddInventoryPage() {
   return (
     <ProtectedRoute allowedRoles={['admin', 'branch_head']}>
       <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push('/inventory')}
@@ -61,7 +60,6 @@ export default function AddInventoryPage() {
           </div>
         </div>
 
-        {/* Form */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

@@ -23,7 +23,6 @@ export const useConfirmToast = () => {
             <button
               onClick={async () => {
                 toast.dismiss(t.id)
-                // Add a short delay to ensure the confirm dialog is gone before running the action
                 await new Promise(resolve => setTimeout(resolve, 150))
                 if (onConfirm) await onConfirm()
               }}

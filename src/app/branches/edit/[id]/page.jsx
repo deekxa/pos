@@ -18,8 +18,7 @@ export default function EditBranchPage() {
   })
 
   useEffect(() => {
-    // Load branch data based on ID
-    // This is mock data - replace with actual data fetching
+   
     const mockBranch = {
       code: 'BWL',
       name: 'Butwal Branch',
@@ -33,7 +32,6 @@ export default function EditBranchPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Update logic
     console.log('Updated branch data:', formData)
     router.push('/branches')
   }
@@ -49,7 +47,6 @@ export default function EditBranchPage() {
     <ProtectedRoute allowedRoles={['admin']}>
       <div className="space-y-6">
         
-        {/* Header */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.back()}
@@ -63,11 +60,9 @@ export default function EditBranchPage() {
           </div>
         </div>
 
-        {/* Form */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Basic Information */}
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2">
                 <Building2 className="w-4 h-4" />
@@ -161,7 +156,6 @@ export default function EditBranchPage() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-3 pt-6 border-t border-gray-200">
               <button
                 type="submit"
