@@ -307,7 +307,7 @@ export default function POSPage() {
     setSelectedTable(updatedTables.find(t => t.id === tableId))
   }
 
-  const clearTable = (tableId) => {
+  const clearTable = async (tableId) => {
     const updatedTables = tables.map(table => {
       if (table.id === tableId) {
         return {
@@ -326,7 +326,9 @@ export default function POSPage() {
       setShowTableView(true)
       setShowBilling(false)
     }
-    toast.success('Table cleared successfully')
+    // Wait for state updates to finish (optional, for UI sync)
+    await new Promise(resolve => setTimeout(resolve, 100))
+    // Success toast will be shown after confirm dialog is gone
   }
 
   const getTableTotal = (table) => {
@@ -929,7 +931,11 @@ export default function POSPage() {
                           onClick={() => {
                             confirmAction(
                               'Are you sure you want to clear this table? All orders will be removed.',
-                              () => clearTable(selectedTable.id)
+                              async () => {
+                                await clearTable(selectedTable.id)
+                                await new Promise(resolve => setTimeout(resolve, 1000))
+                                toast.success('Table cleared successfully')
+                              }
                             )
                           }}
                           className="w-full px-4 py-2.5 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors border border-gray-200"
@@ -946,7 +952,7 @@ export default function POSPage() {
         )}
       </div>
 
-      {/* Add/Edit Table Modal */}
+    
       {tableModal.show && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">

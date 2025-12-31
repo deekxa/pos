@@ -7,7 +7,7 @@ export const useConfirmToast = () => {
     toast.custom(
       (t) => (
         <div
-          className={`${
+          className={`$
             t.visible ? 'animate-enter' : 'animate-leave'
           } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
         >
@@ -21,9 +21,11 @@ export const useConfirmToast = () => {
           </div>
           <div className="flex border-l border-gray-200">
             <button
-              onClick={() => {
-                onConfirm()
+              onClick={async () => {
                 toast.dismiss(t.id)
+                // Add a short delay to ensure the confirm dialog is gone before running the action
+                await new Promise(resolve => setTimeout(resolve, 150))
+                if (onConfirm) await onConfirm()
               }}
               className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-green-600 hover:text-green-500 focus:outline-none"
             >
@@ -31,8 +33,8 @@ export const useConfirmToast = () => {
             </button>
             <button
               onClick={() => {
-                if (onCancel) onCancel()
                 toast.dismiss(t.id)
+                if (onCancel) onCancel()
               }}
               className="w-full border border-transparent rounded-none p-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-500 focus:outline-none"
             >
