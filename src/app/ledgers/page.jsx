@@ -139,7 +139,7 @@ export default function LedgersPage() {
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Income</span>
               <TrendingUp className="text-gray-400" size={16} />
             </div>
-            <div className="text-2xl font-semibold text-gray-900">₹{totalIncome.toLocaleString()}</div>
+            <div className="text-2xl font-semibold text-gray-900">रु{totalIncome.toLocaleString()}</div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -147,14 +147,14 @@ export default function LedgersPage() {
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Expenses</span>
               <TrendingDown className="text-gray-400" size={16} />
             </div>
-            <div className="text-2xl font-semibold text-gray-900">₹{totalExpense.toLocaleString()}</div>
+            <div className="text-2xl font-semibold text-gray-900">रु{totalExpense.toLocaleString()}</div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Net Balance</span>
             </div>
-            <div className="text-2xl font-semibold text-gray-900">₹{netBalance.toLocaleString()}</div>
+            <div className="text-2xl font-semibold text-gray-900">रु{netBalance.toLocaleString()}</div>
           </div>
         </div>
 
@@ -277,7 +277,7 @@ export default function LedgersPage() {
                     </td>
                     <td className="px-4 py-3 text-right font-semibold text-sm">
                       <span className={t.amount >= 0 ? 'text-green-700' : 'text-red-700'}>
-                        {t.amount >= 0 ? '+' : '-'}₹{Math.abs(t.amount).toLocaleString()}
+                        {t.amount >= 0 ? '+' : '-'}रु{Math.abs(t.amount).toLocaleString()}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">

@@ -10,11 +10,19 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
-    if (storedUser) {
+    const sessionExpiry = localStorage.getItem('sessionExpiry')
+    const now = Date.now()
+    if (storedUser && sessionExpiry && now < parseInt(sessionExpiry, 10)) {
       setUser(JSON.parse(storedUser))
+    } else {
+      localStorage.removeItem('user')
+      localStorage.removeItem('sessionExpiry')
     }
     setLoading(false)
   }, [])
+
+  // Session expires after 30 minutes (1800000 ms)
+  const SESSION_DURATION = 30 * 60 * 1000
 
   const login = (email, password) => {
     const users = [
@@ -34,6 +42,7 @@ export function AuthProvider({ children }) {
       const { password, ...userWithoutPassword } = foundUser
       setUser(userWithoutPassword)
       localStorage.setItem('user', JSON.stringify(userWithoutPassword))
+      localStorage.setItem('sessionExpiry', (Date.now() + SESSION_DURATION).toString())
       return { success: true, user: userWithoutPassword }
     }
     
@@ -43,6 +52,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
+    localStorage.removeItem('sessionExpiry')
   }
 
   return (

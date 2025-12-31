@@ -111,7 +111,7 @@ export default function CategoryReportPage() {
                 <TrendingUp className="text-gray-600" size={16} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">₹{totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-900">रु{totalRevenue.toLocaleString()}</div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-5">
@@ -161,7 +161,7 @@ export default function CategoryReportPage() {
                       </div>
                     </td>
                     <td className="px-5 py-4 text-right font-bold text-gray-900 text-sm">
-                      ₹{cat.revenue.toLocaleString()}
+                      रु{cat.revenue.toLocaleString()}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">

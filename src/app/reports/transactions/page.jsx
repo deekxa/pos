@@ -156,7 +156,7 @@ export default function AllTransactionsPage() {
                     <td className="px-5 py-3.5 text-sm text-gray-600">{txn.date}</td>
                     <td className="px-5 py-3.5 text-sm text-gray-900">{txn.customer}</td>
                     <td className="px-5 py-3.5 text-right text-sm text-gray-600">{txn.items}</td>
-                    <td className="px-5 py-3.5 text-right font-bold text-gray-900 text-sm">₹{txn.amount.toLocaleString()}</td>
+                    <td className="px-5 py-3.5 text-right font-bold text-gray-900 text-sm">रु{txn.amount.toLocaleString()}</td>
                     <td className="px-5 py-3.5 text-center">
                       {txn.status === 'Completed' ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-900 text-white rounded-md text-xs font-medium">

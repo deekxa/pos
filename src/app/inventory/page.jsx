@@ -6,7 +6,6 @@ import {
   Package,
   AlertTriangle,
   TrendingUp,
-  DollarSign,
   Edit,
   Trash2,
   Search,
@@ -265,10 +264,10 @@ export default function InventoryPage() {
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                 Total Value
               </span>
-              <span className="text-gray-400 text-base">₹</span>
+              <span className="text-gray-400 text-base">रु</span>
             </div>
             <div className="text-2xl font-semibold text-gray-900">
-              ₹{totalValue.toLocaleString()}
+              रु{totalValue.toLocaleString()}
             </div>
           </div>
         </div>
@@ -446,7 +445,7 @@ export default function InventoryPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3 font-semibold text-gray-900 text-sm">
-                        ₹{item.price.toLocaleString()}
+                        रु{item.price.toLocaleString()}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">

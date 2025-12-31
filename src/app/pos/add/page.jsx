@@ -132,7 +132,7 @@ export default function AddPOSProductPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price (₹) <span className="text-red-500">*</span>
+                    Price (रु) <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"

@@ -99,7 +99,7 @@ export default function ViewPurchasePage() {
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Purchase Amount</p>
                 <div className="inline-flex items-baseline gap-1">
                   <h2 className="text-5xl font-bold text-gray-900">
-                    ₹{purchase.amount.toLocaleString()}
+                    रु{purchase.amount.toLocaleString()}
                   </h2>
                 </div>
               </div>

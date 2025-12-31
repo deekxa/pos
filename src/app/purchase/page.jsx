@@ -172,9 +172,9 @@ export default function PurchasePage() {
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                 Total Amount
               </span>
-              <span className="text-gray-400 text-base">₹</span>
+              <span className="text-gray-400 text-base">रु</span>
             </div>
-            <div className="text-2xl font-semibold text-gray-900">₹{totalAmount.toLocaleString()}</div>
+            <div className="text-2xl font-semibold text-gray-900">रु{totalAmount.toLocaleString()}</div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -314,7 +314,7 @@ export default function PurchasePage() {
                       {purchase.items}
                     </td>
                     <td className="px-4 py-3 font-semibold text-gray-900 text-sm">
-                      ₹{purchase.amount.toLocaleString()}
+                      रु{purchase.amount.toLocaleString()}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${

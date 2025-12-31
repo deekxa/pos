@@ -139,7 +139,7 @@ export default function TopProductsPage() {
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-right font-semibold text-gray-900 text-sm">{product.sold}</td>
-                      <td className="px-5 py-3.5 text-right font-bold text-gray-900 text-sm">₹{product.revenue.toLocaleString()}</td>
+                      <td className="px-5 py-3.5 text-right font-bold text-gray-900 text-sm">रु{product.revenue.toLocaleString()}</td>
                       <td className="px-5 py-3.5 text-right text-sm text-gray-600">{product.stock} units</td>
                     </tr>
                   )

@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { 
-  DollarSign, ShoppingCart, Package, AlertTriangle, 
+  ShoppingCart, Package, AlertTriangle, 
   TrendingUp, TrendingDown, 
   ArrowUpRight, Calendar, ChevronRight, Zap, MapPin, Target, Activity
 } from 'lucide-react'
@@ -168,7 +168,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-gray-700" />
+              <span className="text-2xl font-bold text-gray-700">रु</span>
             </div>
             <div className="flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 rounded">
               <TrendingUp className="w-3 h-3 text-green-600" />
@@ -176,7 +176,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Cash Flow</div>
-          <div className="text-2xl font-bold text-gray-900">₹{currentBranch.revenue.toLocaleString()}</div>
+          
+                    <div className="text-2xl font-bold text-gray-900">रु{currentBranch.revenue.toLocaleString()}</div>
           <div className="text-xs text-gray-500 mt-2">Since morning</div>
         </div>
 
@@ -271,7 +272,8 @@ export default function Dashboard() {
                       <span>{txn.time}</span>
                     </div>
                   </div>
-                  <div className="font-bold text-gray-900">₹{txn.total.toLocaleString()}</div>
+                  
+                                  <div className="font-bold text-gray-900">रु{txn.total.toLocaleString()}</div>
                 </div>
               </div>
             ))}

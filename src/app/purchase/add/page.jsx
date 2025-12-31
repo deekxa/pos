@@ -129,10 +129,10 @@ export default function AddPurchasePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount (₹) <span className="text-red-500">*</span>
+                    Amount (रु) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">रु</span>
                     <input
                       type="number"
                       name="amount"

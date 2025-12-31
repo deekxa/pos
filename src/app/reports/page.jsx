@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { 
   TrendingUp, 
   TrendingDown, 
-  DollarSign, 
+  
   ShoppingCart, 
   Package,
   Download,
@@ -59,9 +59,9 @@ export default function ReportsPage() {
       [''],
       ['KEY METRICS'],
       ['Metric', 'Value', 'Change'],
-      ['Total Revenue', `₹${metrics.totalRevenue}`, `${metrics.revenueChange}%`],
+      ['Total Revenue', `रु${metrics.totalRevenue}`, `${metrics.revenueChange}%`],
       ['Total Orders', metrics.totalOrders, `${metrics.ordersChange}%`],
-      ['Avg Order Value', `₹${metrics.avgOrderValue}`, `${metrics.avgOrderChange}%`],
+      ['Avg Order Value', `रु${metrics.avgOrderValue}`, `${metrics.avgOrderChange}%`],
       ['Low Stock Items', metrics.lowStockItems, `${metrics.stockChange} items`],
       [''],
       ['TOP SELLING PRODUCTS'],
@@ -128,10 +128,10 @@ export default function ReportsPage() {
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Revenue</span>
               <div className="p-2 bg-gray-50 rounded-lg">
-                <DollarSign className="text-gray-600" size={16} />
+                <span className="text-xl font-bold">रु</span>
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-2">₹{metrics.totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-900 mb-2">रु{metrics.totalRevenue.toLocaleString()}</div>
             <div className="flex items-center gap-1 text-xs">
               <ArrowUp className="text-green-600" size={12} />
               <span className="font-medium text-green-700">{metrics.revenueChange}% vs last period</span>
@@ -159,7 +159,7 @@ export default function ReportsPage() {
                 <TrendingUp className="text-gray-600" size={16} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-2">₹{metrics.avgOrderValue}</div>
+            <div className="text-2xl font-bold text-gray-900 mb-2">रु{metrics.avgOrderValue}</div>
             <div className="flex items-center gap-1 text-xs">
               <ArrowUp className="text-green-600" size={12} />
               <span className="font-medium text-green-700">{metrics.avgOrderChange}% vs last period</span>
@@ -208,7 +208,7 @@ export default function ReportsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold text-gray-900 text-sm">₹{product.revenue.toLocaleString()}</div>
+                    <div className="font-semibold text-gray-900 text-sm">रु{product.revenue.toLocaleString()}</div>
                     <div className="text-xs text-gray-500">{product.stock} in stock</div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function ReportsPage() {
                         </span>
                       </div>
                     </div>
-                    <span className="text-sm font-semibold text-gray-900">₹{cat.revenue.toLocaleString()}</span>
+                    <span className="text-sm font-semibold text-gray-900">रु{cat.revenue.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -294,7 +294,7 @@ export default function ReportsPage() {
                     <td className="px-5 py-3 text-sm font-medium text-gray-900">{txn.invoice}</td>
                     <td className="px-5 py-3 text-sm text-gray-600">{txn.date}</td>
                     <td className="px-5 py-3 text-sm text-gray-900">{txn.customer}</td>
-                    <td className="px-5 py-3 text-sm font-semibold text-gray-900 text-right">₹{txn.amount.toLocaleString()}</td>
+                    <td className="px-5 py-3 text-sm font-semibold text-gray-900 text-right">रु{txn.amount.toLocaleString()}</td>
                     <td className="px-5 py-3 text-center">
                       <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium ${
                         txn.status === 'Completed' 

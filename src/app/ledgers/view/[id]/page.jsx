@@ -102,7 +102,7 @@ export default function ViewTransactionPage() {
                     {transaction.amount >= 0 ? '+' : '-'}
                   </span>
                   <h2 className="text-5xl font-bold text-gray-900">
-                    ₹{Math.abs(transaction.amount).toLocaleString()}
+                    रु{Math.abs(transaction.amount).toLocaleString()}
                   </h2>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export default function ViewTransactionPage() {
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm hover:shadow"
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm hover:shadow"
                 >
                   Delete
                 </button>
