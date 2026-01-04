@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+'use client'
+
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Minus,
   Plus,
@@ -11,6 +13,7 @@ import {
   Percent
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function CartWithBilling({
   orderInfo,
@@ -21,12 +24,22 @@ export default function CartWithBilling({
   onProceedToBilling,
   showCustomerInfo = false
 }) {
+  const router = useRouter();
   const [showBillPreview, setShowBillPreview] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [discount, setDiscount] = useState(0);
   const [tempDiscount, setTempDiscount] = useState('');
+  const discountInputRef = useRef(null);
+
+  useEffect(() => {
+    if (showDiscountModal) {
+      setTimeout(() => {
+        discountInputRef.current?.focus();
+      }, 100);
+    }
+  }, [showDiscountModal]);
 
   const getSubtotal = () => {
     return orders.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -35,7 +48,7 @@ export default function CartWithBilling({
   const getTax = () => {
     const subtotal = getSubtotal();
     const afterDiscount = subtotal - (subtotal * discount / 100);
-    return afterDiscount * 0.13; // 13% tax
+    return afterDiscount * 0.1; 
   };
 
   const getFinalTotal = () => {
@@ -50,10 +63,8 @@ export default function CartWithBilling({
       return;
     }
     
-    // Clear all items from cart
     orders.forEach(item => onRemoveItem(item.id));
     
-    // Reset customer info and discount
     setCustomerName('');
     setContactNumber('');
     setDiscount(0);
@@ -103,7 +114,30 @@ export default function CartWithBilling({
     const existingBills = JSON.parse(localStorage.getItem('saved_bills') || '[]');
     existingBills.push(billData);
     localStorage.setItem('saved_bills', JSON.stringify(existingBills));
-    toast.success('Bill saved successfully!');
+    
+    toast.success(
+      (t) => (
+        <div className="flex items-center justify-between gap-3 w-full">
+          <span className="font-medium">Bill saved successfully!</span>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              router.push('/pos/saved-bills');
+            }}
+            className="px-3 py-1.5 bg-gray-900 text-white rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors whitespace-nowrap"
+          >
+            View Bills
+          </button>
+        </div>
+      ),
+      {
+        duration: 5000,
+        style: {
+          minWidth: '350px',
+          maxWidth: '500px',
+        },
+      }
+    );
   };
 
   const handlePreviewAndPrint = () => {
@@ -133,7 +167,7 @@ export default function CartWithBilling({
         </head>
         <body>
           <div class="header">
-            <h1>Restaurant Name</h1>
+            <h1>Savory Delight</h1>
             <p>Address Line 1, City<br/>Phone: +123 456 7890</p>
           </div>
           <div class="info">
@@ -167,7 +201,7 @@ export default function CartWithBilling({
               </div>
             ` : ''}
             <div class="total-row">
-              <span>Tax (13%):</span>
+              <span>Tax (GST 10%):</span>
               <span>RS.${getTax().toFixed(2)}</span>
             </div>
             <div class="total-row final-total">
@@ -184,6 +218,22 @@ export default function CartWithBilling({
     `);
     printWindow.document.close();
     printWindow.print();
+  };
+
+  const handleDiscountKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleApplyDiscount();
+    } else if (e.key === 'Escape') {
+      setShowDiscountModal(false);
+      setTempDiscount('');
+    }
+  };
+
+  const handleDiscountBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowDiscountModal(false);
+      setTempDiscount('');
+    }
   };
 
   return (
@@ -208,10 +258,11 @@ export default function CartWithBilling({
         {showCustomerInfo && (
           <div className="p-4 border-b border-gray-200 space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">
                 Customer Name <span className="text-red-500">*</span>
               </label>
               <input
+                id="customerName"
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
@@ -220,10 +271,11 @@ export default function CartWithBilling({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Number
               </label>
               <input
+                id="contactNumber"
                 type="tel"
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
@@ -252,6 +304,7 @@ export default function CartWithBilling({
                     <button
                       onClick={() => onRemoveItem(item.id)}
                       className="text-red-500 hover:text-red-700 transition-colors"
+                      aria-label={`Remove ${item.name}`}
                     >
                       <X size={18} />
                     </button>
@@ -261,6 +314,7 @@ export default function CartWithBilling({
                       <button
                         onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                         className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded hover:bg-gray-50 transition-colors"
+                        aria-label="Decrease quantity"
                       >
                         <Minus size={14} />
                       </button>
@@ -268,6 +322,7 @@ export default function CartWithBilling({
                       <button
                         onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                         className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded hover:bg-gray-50 transition-colors"
+                        aria-label="Increase quantity"
                       >
                         <Plus size={14} />
                       </button>
@@ -314,7 +369,7 @@ export default function CartWithBilling({
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax (13%):</span>
+                  <span className="text-gray-600">Tax (GST 10%):</span>
                   <span className="font-medium text-gray-900">RS.{getTax().toFixed(2)}</span>
                 </div>
                 <div className="border-t border-gray-300 pt-2 mt-2">
@@ -356,7 +411,7 @@ export default function CartWithBilling({
                 {onComplete && !onProceedToBilling && (
                   <button
                     onClick={onComplete}
-                    className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                    className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-transition-colors"
                   >
                     Place {orderInfo?.type === 'dine-in' ? 'Dine-in' : orderInfo?.type === 'delivery' ? 'Delivery' : 'Takeaway'} Order
                   </button>
@@ -376,42 +431,49 @@ export default function CartWithBilling({
       </div>
 
       {showDiscountModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={handleDiscountBackdropClick}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="discount-modal-title"
+        >
           <div className="bg-white rounded-lg p-6 max-w-sm w-full">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Add Discount</h3>
+              <h3 id="discount-modal-title" className="text-lg font-semibold text-gray-900">
+                Add Discount
+              </h3>
               <button
                 onClick={() => {
                   setShowDiscountModal(false);
                   setTempDiscount('');
                 }}
                 className="p-1 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Close modal"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="discountInput" className="block text-sm font-medium text-gray-700 mb-2">
                 Discount Percentage
               </label>
               <div className="relative">
                 <input
+                  ref={discountInputRef}
+                  id="discountInput"
                   type="number"
                   value={tempDiscount}
                   onChange={(e) => setTempDiscount(e.target.value)}
+                  onKeyDown={handleDiscountKeyPress}
                   placeholder="Enter discount (0-100)"
                   min="0"
                   max="100"
                   step="0.01"
                   className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleApplyDiscount();
-                    }
-                  }}
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                   <Percent size={16} />
                 </div>
               </div>
@@ -429,7 +491,8 @@ export default function CartWithBilling({
               </button>
               <button
                 onClick={handleApplyDiscount}
-                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                disabled={!tempDiscount}
+                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Apply
               </button>

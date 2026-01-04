@@ -34,6 +34,7 @@ export default function POSPage() {
   const [orderMode, setOrderMode] = useState("table");
   const [individualOrderType, setIndividualOrderType] = useState(null);
   const [individualOrders, setIndividualOrders] = useState([]);
+  const [showIndividualBilling, setShowIndividualBilling] = useState(false);
 
   // Load data
   useEffect(() => {
@@ -401,6 +402,10 @@ export default function POSPage() {
   };
 
   const handleCompleteIndividualOrder = () => {
+    setShowIndividualBilling(true);
+  };
+
+  const handleIndividualBillingComplete = (transactionData) => {
     const updatedProducts = products.map((product) => {
       const orderItem = individualOrders.find((order) => order.id === product.id);
       if (orderItem) {
@@ -412,21 +417,23 @@ export default function POSPage() {
     setProducts(updatedProducts);
     localStorage.setItem("inventory", JSON.stringify(updatedProducts));
 
-    const transactionData = {
+    const transaction = {
       orderType: individualOrderType,
       items: individualOrders,
       subtotal: individualOrders.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      ...transactionData,
       timestamp: new Date().toISOString(),
     };
 
     const existingHistory = JSON.parse(localStorage.getItem("sales_history") || "[]");
-    existingHistory.push(transactionData);
+    existingHistory.push(transaction);
     localStorage.setItem("sales_history", JSON.stringify(existingHistory));
 
     setIndividualOrders([]);
     setIndividualOrderType(null);
     setShowTableView(true);
     setOrderMode("table");
+    setShowIndividualBilling(false);
     toast.success("Order completed successfully!", { duration: 4000 });
   };
 
@@ -472,6 +479,7 @@ export default function POSPage() {
     }
   };
 
+
   if (showBilling && selectedTable) {
     return (
       <ProtectedRoute allowedRoles={["admin", "branch_head", "cashier", "worker"]}>
@@ -485,12 +493,25 @@ export default function POSPage() {
     );
   }
 
+  if (showIndividualBilling && individualOrders.length > 0) {
+    return (
+      <ProtectedRoute allowedRoles={["admin", "branch_head", "cashier", "worker"]}>
+        <BillingForm
+          table={{ number: individualOrderType, orders: individualOrders }}
+          products={products}
+          onBack={() => setShowIndividualBilling(false)}
+          onComplete={handleIndividualBillingComplete}
+        />
+      </ProtectedRoute>
+    );
+  }
+
   return (
     <ProtectedRoute allowedRoles={["admin", "branch_head", "cashier", "worker"]}>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Point of Sale</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">Orders/KOT</h1>
             <p className="text-sm text-gray-500 mt-0.5">
               {showTableView
                 ? orderMode === "table"
@@ -572,7 +593,7 @@ export default function POSPage() {
                 onCategoryChange={setSelectedCategory}
               />
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4 min-h-[600px]">
+              <div className="bg-white rounded-lg border border-gray-200 p-4 min-h-150">
                 {filteredProducts.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16">
                     <Package className="text-gray-300 mb-3" size={48} />

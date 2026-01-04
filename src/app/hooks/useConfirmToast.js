@@ -7,26 +7,26 @@ export const useConfirmToast = () => {
     toast.custom(
       (t) => (
         <div
-          className={`$
+          className={`${
             t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+          } max-w-md w-full bg-[#18181b] shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-white/5`}
         >
-          <div className="flex-1 w-0 p-4">
+          <div className="flex-1 w-0 p-5">
             <div className="flex items-start">
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">Confirm Action</p>
-                <p className="mt-1 text-sm text-gray-500">{message}</p>
+                <p className="text-sm font-semibold text-white">Confirm Action</p>
+                <p className="mt-1 text-sm text-gray-400">{message}</p>
               </div>
             </div>
           </div>
-          <div className="flex border-l border-gray-200">
+          <div className="flex border-l border-white/5">
             <button
               onClick={async () => {
                 toast.dismiss(t.id)
                 await new Promise(resolve => setTimeout(resolve, 150))
                 if (onConfirm) await onConfirm()
               }}
-              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-green-600 hover:text-green-500 focus:outline-none"
+              className="w-full border-none rounded-none rounded-r-lg px-4 py-5 flex items-center justify-center text-sm font-medium text-blue-400 hover:text-blue-300 hover:bg-white/5 focus:outline-none transition-colors"
             >
               Confirm
             </button>
@@ -35,14 +35,14 @@ export const useConfirmToast = () => {
                 toast.dismiss(t.id)
                 if (onCancel) onCancel()
               }}
-              className="w-full border border-transparent rounded-none p-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-500 focus:outline-none"
+              className="w-full border-none rounded-none px-4 py-5 flex items-center justify-center text-sm font-medium text-gray-400 hover:text-gray-300 hover:bg-white/5 focus:outline-none transition-colors"
             >
               Cancel
             </button>
           </div>
         </div>
       ),
-      { duration: Infinity }
+      { duration: 3500 }
     )
   }
 
