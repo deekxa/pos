@@ -7,17 +7,16 @@ import {
   CheckCircle,
   CreditCard,
   Banknote,
-  Smartphone,
-  Split,
+  Wallet,
   Tag,
-  Percent,
   X,
 } from "lucide-react";
 
 export default function BillingForm({ table, products, onBack, onComplete }) {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [discount, setDiscount] = useState({ type: "none", value: 0 });
-  const [showSplitModal, setShowSplitModal] = useState(false);
+  const [showMixedModal, setShowMixedModal] = useState(false);
+  const [mixedPayment, setMixedPayment] = useState({ cash: 0, online: 0 });
 
   const getTableTotal = () => {
     return table.orders.reduce(
@@ -44,6 +43,25 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
     return afterDiscount + tax;
   };
 
+  const handleSplitHalf = () => {
+    const finalTotal = getFinalTotal();
+    const half = finalTotal / 2;
+    setMixedPayment({ cash: half, online: half });
+  };
+
+  const handleMixedConfirm = () => {
+    const total = getFinalTotal();
+    const mixedTotal = mixedPayment.cash + mixedPayment.online;
+    
+    if (Math.abs(mixedTotal - total) > 0.01) {
+      alert(`Combined amounts must equal total: ₹${total.toFixed(2)}`);
+      return;
+    }
+    
+    setPaymentMethod("mixed");
+    setShowMixedModal(false);
+  };
+
   const handleCompletePayment = () => {
     const transactionData = {
       id: Date.now(),
@@ -54,6 +72,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
       tax: (getTableTotal() - calculateDiscount()) * 0.1,
       total: getFinalTotal(),
       paymentMethod: paymentMethod,
+      mixedPayment: paymentMethod === "mixed" ? mixedPayment : null,
       timestamp: new Date().toISOString(),
     };
 
@@ -63,20 +82,20 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="border-b border-gray-200 p-6">
+        <div className="bg-gray-900 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Invoice</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <h2 className="text-2xl font-bold text-white">Invoice</h2>
+              <p className="text-sm text-gray-300 mt-1">
                 Table #{table.number}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-gray-500">Invoice #</p>
-              <p className="font-mono font-semibold text-gray-900">
+              <p className="text-xs text-gray-400">Invoice #</p>
+              <p className="font-mono font-semibold text-white">
                 {Date.now().toString().slice(-6)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-300 mt-1">
                 {new Date().toLocaleString("en-IN", {
                   day: "2-digit",
                   month: "short",
@@ -122,10 +141,10 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                     {item.quantity}
                   </td>
                   <td className="py-4 px-2 text-right text-gray-900">
-                    रु{item.price.toLocaleString()}
+                    ₹{item.price.toLocaleString()}
                   </td>
                   <td className="py-4 px-2 text-right font-semibold text-gray-900">
-                    रु{(item.price * item.quantity).toLocaleString()}
+                    ₹{(item.price * item.quantity).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -138,7 +157,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span className="font-medium">
-                    रु{getTableTotal().toLocaleString()}
+                    ₹{getTableTotal().toLocaleString()}
                   </span>
                 </div>
 
@@ -152,7 +171,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                         : ""}
                     </span>
                     <span className="font-medium">
-                      -रु{calculateDiscount().toFixed(2)}
+                      -₹{calculateDiscount().toFixed(2)}
                     </span>
                   </div>
                 )}
@@ -160,7 +179,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                 <div className="flex justify-between text-gray-600">
                   <span>Tax (GST 10%)</span>
                   <span className="font-medium">
-                    रु
+                    ₹
                     {((getTableTotal() - calculateDiscount()) * 0.1).toFixed(2)}
                   </span>
                 </div>
@@ -170,7 +189,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                     Grand Total
                   </span>
                   <span className="text-3xl font-bold text-gray-900">
-                    रु{getFinalTotal().toLocaleString()}
+                    ₹{getFinalTotal().toFixed(2)}
                   </span>
                 </div>
 
@@ -188,7 +207,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                     >
                       <option value="none">No Discount</option>
                       <option value="percentage">Percentage (%)</option>
-                      <option value="amount">Fixed Amount (रु)</option>
+                      <option value="amount">Fixed Amount (₹)</option>
                     </select>
                     {discount.type !== "none" && (
                       <input
@@ -201,7 +220,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                           })
                         }
                         placeholder={
-                          discount.type === "percentage" ? "0%" : "रु0"
+                          discount.type === "percentage" ? "0%" : "₹0"
                         }
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
                         min="0"
@@ -215,7 +234,7 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                   <p className="text-sm font-medium text-gray-700 mb-3">
                     Payment Method
                   </p>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => setPaymentMethod("cash")}
                       className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 transition-all ${
@@ -236,31 +255,33 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
                       }`}
                     >
                       <CreditCard size={18} />
-                      <span className="font-medium text-sm">Card</span>
+                      <span className="font-medium text-sm">Online</span>
                     </button>
                     <button
-                      onClick={() => setPaymentMethod("upi")}
+                      onClick={() => setShowMixedModal(true)}
                       className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 transition-all ${
-                        paymentMethod === "upi"
+                        paymentMethod === "mixed"
                           ? "border-gray-900 bg-gray-900 text-white"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <Smartphone size={18} />
-                      <span className="font-medium text-sm">UPI</span>
-                    </button>
-                    <button
-                      onClick={() => setShowSplitModal(true)}
-                      className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 transition-all ${
-                        paymentMethod === "split"
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <Split size={18} />
-                      <span className="font-medium text-sm">Split</span>
+                      <Wallet size={18} />
+                      <span className="font-medium text-sm">Both</span>
                     </button>
                   </div>
+                  
+                  {paymentMethod === "mixed" && (
+                    <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600">Cash:</span>
+                        <span className="font-semibold text-gray-900">₹{mixedPayment.cash.toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm mt-2">
+                        <span className="text-gray-600">Online:</span>
+                        <span className="font-semibold text-gray-900">₹{mixedPayment.online.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -292,34 +313,109 @@ export default function BillingForm({ table, products, onBack, onComplete }) {
         </div>
       </div>
 
-      {showSplitModal && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      {showMixedModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Split Payment
+                Cash + Online Payment
               </h3>
               <button
-                onClick={() => setShowSplitModal(false)}
+                onClick={() => setShowMixedModal(false)}
                 className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
-            <p className="text-gray-600 text-sm mb-4">
-              Split payment feature coming soon. You'll be able to split by:
-            </p>
-            <ul className="space-y-2 text-sm text-gray-600 mb-6">
-              <li>• Equal split among guests</li>
-              <li>• Split by items</li>
-              <li>• Custom amount split</li>
-            </ul>
-            <button
-              onClick={() => setShowSplitModal(false)}
-              className="w-full px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
-            >
-              Close
-            </button>
+
+            <div className="mb-4">
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">Total Amount</p>
+                  <p className="text-2xl font-bold text-gray-900">₹{getFinalTotal().toFixed(2)}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cash Amount
+                  </label>
+                  <input
+                    type="number"
+                    value={mixedPayment.cash}
+                    onChange={(e) => setMixedPayment({
+                      ...mixedPayment,
+                      cash: parseFloat(e.target.value) || 0
+                    })}
+                    placeholder="Enter cash amount"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    min="0"
+                    max={getFinalTotal()}
+                    step="0.01"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Online Amount
+                  </label>
+                  <input
+                    type="number"
+                    value={mixedPayment.online}
+                    onChange={(e) => setMixedPayment({
+                      ...mixedPayment,
+                      online: parseFloat(e.target.value) || 0
+                    })}
+                    placeholder="Enter online amount"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    min="0"
+                    max={getFinalTotal()}
+                    step="0.01"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSplitHalf}
+                  className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Split 50/50
+                </button>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Total Entered:</span>
+                    <span className={`font-semibold ${
+                      Math.abs((mixedPayment.cash + mixedPayment.online) - getFinalTotal()) < 0.01
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}>
+                      ₹{(mixedPayment.cash + mixedPayment.online).toFixed(2)}
+                    </span>
+                  </div>
+                  {Math.abs((mixedPayment.cash + mixedPayment.online) - getFinalTotal()) >= 0.01 && (
+                    <p className="text-xs text-red-600 mt-1">
+                      Amount must equal ₹{getFinalTotal().toFixed(2)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowMixedModal(false)}
+                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleMixedConfirm}
+                className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              >
+                Confirm Payment
+              </button>
+            </div>
           </div>
         </div>
       )}

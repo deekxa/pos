@@ -70,6 +70,7 @@ export default function PurchasePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModal, setDeleteModal] = useState(false);
   const [purchaseToDelete, setPurchaseToDelete] = useState(null);
+  const [bulkDeleteModal, setBulkDeleteModal] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -118,12 +119,9 @@ export default function PurchasePage() {
   };
 
   const handleBulkDelete = () => {
-    if (confirm(`Delete ${selectedItems.length} selected purchase orders?`)) {
-      setPurchases(
-        purchases.filter((item) => !selectedItems.includes(item.id))
-      );
-      setSelectedItems([]);
-    }
+    setPurchases(purchases.filter((item) => !selectedItems.includes(item.id)));
+    setSelectedItems([]);
+    setBulkDeleteModal(false);
   };
 
   const openDeleteModal = (purchase) => {
@@ -266,7 +264,7 @@ export default function PurchasePage() {
             </button>
             {selectedItems.length > 0 && (
               <button
-                onClick={handleBulkDelete}
+                onClick={() => setBulkDeleteModal(true)}
                 className="inline-flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
               >
                 <Trash2 size={16} />
@@ -455,7 +453,6 @@ export default function PurchasePage() {
         </div>
       </div>
 
-   
       {deleteModal && purchaseToDelete && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl animate-in zoom-in duration-200">
@@ -487,9 +484,42 @@ export default function PurchasePage() {
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm hover:shadow"
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-sm hover:shadow"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {bulkDeleteModal && selectedItems.length > 0 && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl animate-in zoom-in duration-200">
+            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-red-50">
+              <Trash2 className="text-red-600" size={24} />
+            </div>
+            <h3 className="text-lg font-semibold text-center text-gray-900 mb-2">
+              Delete {selectedItems.length} Purchase{" "}
+              {selectedItems.length === 1 ? "Order" : "Orders"}?
+            </h3>
+            <p className="text-center text-gray-600 text-sm leading-relaxed mb-6">
+              Are you sure you want to delete {selectedItems.length} selected
+              purchase {selectedItems.length === 1 ? "order" : "orders"}? This
+              action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setBulkDeleteModal(false)}
+                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-sm hover:shadow"
+              >
+                Delete {selectedItems.length > 1 && `(${selectedItems.length})`}
               </button>
             </div>
           </div>

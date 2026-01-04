@@ -86,6 +86,9 @@ export default function InventoryPage() {
     stockLevel: "all",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [bulkDeleteModal, setBulkDeleteModal] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -149,11 +152,23 @@ export default function InventoryPage() {
   };
 
   const handleBulkDelete = () => {
-    if (confirm(`Delete ${selectedItems.length} selected items?`)) {
-      setInventory(
-        inventory.filter((item) => !selectedItems.includes(item.id))
-      );
-      setSelectedItems([]);
+    setInventory(
+      inventory.filter((item) => !selectedItems.includes(item.id))
+    );
+    setSelectedItems([]);
+    setBulkDeleteModal(false);
+  };
+
+  const openDeleteModal = (item) => {
+    setItemToDelete(item);
+    setDeleteModal(true);
+  };
+
+  const handleDelete = () => {
+    if (itemToDelete) {
+      setInventory(inventory.filter((i) => i.id !== itemToDelete.id));
+      setDeleteModal(false);
+      setItemToDelete(null);
     }
   };
 
@@ -270,7 +285,6 @@ export default function InventoryPage() {
           </div>
         </div>
 
-      
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
@@ -299,7 +313,7 @@ export default function InventoryPage() {
             </button>
             {selectedItems.length > 0 && (
               <button
-                onClick={handleBulkDelete}
+                onClick={() => setBulkDeleteModal(true)}
                 className="inline-flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
               >
                 <Trash2 size={16} />
@@ -455,13 +469,7 @@ export default function InventoryPage() {
                             <Edit size={16} />
                           </button>
                           <button
-                            onClick={() => {
-                              if (confirm("Delete this product?")) {
-                                setInventory(
-                                  inventory.filter((i) => i.id !== item.id)
-                                );
-                              }
-                            }}
+                            onClick={() => openDeleteModal(item)}
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="Delete"
                           >
@@ -508,6 +516,81 @@ export default function InventoryPage() {
           )}
         </div>
       </div>
+
+      {/* Single Delete Modal */}
+      {deleteModal && itemToDelete && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl animate-in zoom-in duration-200">
+            <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-gray-50">
+              <Trash2 className="text-gray-700" size={24} />
+            </div>
+            <h3 className="text-lg font-semibold text-center text-gray-900 mb-2">
+              Delete Product?
+            </h3>
+            <p className="text-center text-gray-600 text-sm leading-relaxed mb-1">
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-gray-900">
+                {itemToDelete.name}
+              </span>{" "}
+              ({itemToDelete.sku})?
+            </p>
+            <p className="text-center text-gray-600 text-sm leading-relaxed mb-6">
+              This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setDeleteModal(false);
+                  setItemToDelete(null);
+                }}
+                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-sm hover:shadow"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Modal */}
+      {bulkDeleteModal && selectedItems.length > 0 && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl animate-in zoom-in duration-200">
+            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-red-50">
+              <Trash2 className="text-red-600" size={24} />
+            </div>
+            <h3 className="text-lg font-semibold text-center text-gray-900 mb-2">
+              Delete {selectedItems.length}{" "}
+              {selectedItems.length === 1 ? "Product" : "Products"}?
+            </h3>
+            <p className="text-center text-gray-600 text-sm leading-relaxed mb-6">
+              Are you sure you want to delete {selectedItems.length} selected{" "}
+              {selectedItems.length === 1 ? "product" : "products"}? This action
+              cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setBulkDeleteModal(false)}
+                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-sm hover:shadow"
+              >
+                Delete {selectedItems.length > 1 && `(${selectedItems.length})`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ProtectedRoute>
   );
 }

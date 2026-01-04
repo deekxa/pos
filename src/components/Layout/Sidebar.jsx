@@ -29,6 +29,7 @@ export default function Sidebar() {
     { icon: TrendingUp, label: 'Reports', path: '/reports', roles: ['admin', 'branch_head'] },
     { icon: ShoppingBag, label: 'Purchase', path: '/purchase', roles: ['admin', 'branch_head'] },
     { icon: Building2, label: 'Branches', path: '/branches', roles: ['admin'] },
+    { icon: FileText, label: 'Saved Bills', path: '/pos/saved-bills', roles: ['admin', 'branch_head', 'cashier', 'worker'] },
   ]
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(user?.role))
