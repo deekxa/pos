@@ -1,70 +1,61 @@
-'use client'
+"use client";
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext()
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const checkAuth = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/auth/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+      console.log("ya ho")
+      console.log(res,":bdjjjfbsdkfgb")
+
+      if (!res.ok) {
+        setLoading(false);
+        setLoggedIn(false);
+        setUser(null);
+      } else {
+        const data = await res.json();
+        console.log(data,"wbjwhjeh")
+        setLoading(false);
+        setLoggedIn(data.loggedIn);
+        setUser(data.user || null);
+      }
+    } catch {
+      setLoading(false);
+      setLoggedIn(false);
+      setUser(null);
+    }
+  };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    const sessionExpiry = localStorage.getItem('sessionExpiry')
-    const now = Date.now()
-    if (storedUser && sessionExpiry && now < parseInt(sessionExpiry, 10)) {
-      setUser(JSON.parse(storedUser))
-    } else {
-      localStorage.removeItem('user')
-      localStorage.removeItem('sessionExpiry')
-    }
-    setLoading(false)
-  }, [])
+    checkAuth();
+  }, []);
 
-  const SESSION_DURATION = 30 * 60 * 1000
-
-  const login = (email, password) => {
-    const users = [
-      { id: 1, email: 'admin@pos.com', password: 'admin123', name: 'Admin User', role: 'admin', branch: 'Savory - ATS', branchCode: 'ATS', organization: 'Savory' },
-      { id: 2, email: 'head@pos.com', password: 'head123', name: 'Branch Head', role: 'branch_head', branch: 'Butwal Branch', branchCode: 'BWL', organization: 'Savory' },
-      { id: 3, email: 'head2@pos.com', password: 'head123', name: 'Ramesh Thapa', role: 'branch_head', branch: 'Bhairahawa Branch', branchCode: 'BHR', organization: 'Savory' },
-      { id: 4, email: 'cashier@pos.com', password: 'cashier123', name: 'Ram Kumar', role: 'cashier', branch: 'Savory - ATS', branchCode: 'ATS', organization: 'Savory' },
-      { id: 5, email: 'cashier1@pos.com', password: 'cashier123', name: 'Maya Devi', role: 'cashier', branch: 'Butwal Branch', branchCode: 'BWL', organization: 'Savory' },
-      { id: 6, email: 'cashier2@pos.com', password: 'cashier123', name: 'Sunita Rai', role: 'cashier', branch: 'Bhairahawa Branch', branchCode: 'BHR', organization: 'Savory' },
-      { id: 7, email: 'worker@pos.com', password: 'worker123', name: 'Gopal KC', role: 'worker', branch: 'Butwal Branch', branchCode: 'BWL', organization: 'Savory' },
-      { id: 8, email: 'worker2@pos.com', password: 'worker123', name: 'Krishna Gurung', role: 'worker', branch: 'Bhairahawa Branch', branchCode: 'BHR', organization: 'Savory' },
-    ]
-
-    const foundUser = users.find(u => u.email === email && u.password === password)
-    
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser
-      setUser(userWithoutPassword)
-      localStorage.setItem('user', JSON.stringify(userWithoutPassword))
-      localStorage.setItem('sessionExpiry', (Date.now() + SESSION_DURATION).toString())
-      return { success: true, user: userWithoutPassword }
-    }
-    
-    return { success: false, error: 'Invalid credentials' }
-  }
-
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem('user')
-    localStorage.removeItem('sessionExpiry')
-  }
+  const logout = async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    setLoggedIn(false);
+    setUser(null);
+    window.location.href = "/login";
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ loggedIn, user, loading, logout, checkAuth }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider')
-  }
-  return context
-}
+export const useAuth = () => useContext(AuthContext);

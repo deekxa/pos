@@ -293,7 +293,7 @@ export default function CartWithBilling({
               <p className="text-gray-500 font-medium">Cart is empty</p>
             </div>
           ) : (
-            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            <div className="space-y-3 max-h-100 overflow-y-auto">
               {orders.map((item) => (
                 <div key={item.id} className="border border-gray-200 rounded-lg p-3">
                   <div className="flex items-start justify-between mb-3">

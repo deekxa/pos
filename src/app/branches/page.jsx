@@ -128,11 +128,11 @@ export default function BranchesPage() {
               className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden hover:border-gray-900 transition-all"
             >
               
-              {/* Branch Icon/Header - Compact */}
+         
               <div className="h-32 bg-linear-to-br from-gray-900 to-gray-700 flex items-center justify-center relative">
                 <Building2 size={40} className="text-white/90" />
 
-                {/* Type Badge - Top Left */}
+             
                 {branch.type === 'Headquarters' && (
                   <div className="absolute top-3 left-3">
                     <span className="px-2.5 py-1 bg-white/95 text-gray-900 rounded text-xs font-bold">
@@ -141,7 +141,7 @@ export default function BranchesPage() {
                   </div>
                 )}
 
-                {/* Code Badge - Top Right */}
+        
                 <div className="absolute top-3 right-3">
                   <span className="px-3 py-1 bg-white/95 text-gray-900 rounded text-sm font-bold">
                     {branch.code}
@@ -149,14 +149,13 @@ export default function BranchesPage() {
                 </div>
               </div>
 
-              {/* Branch Info */}
               <div className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="font-semibold text-gray-900 text-base">
                     {branch.name}
                   </h3>
                   
-                  {/* Actions */}
+            
                   <div className="flex items-center gap-1">
                     <button 
                       onClick={() => router.push(`/branches/edit/${branch.id}`)}

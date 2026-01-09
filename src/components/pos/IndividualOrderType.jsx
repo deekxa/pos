@@ -33,7 +33,7 @@ export default function IndividualOrderType({ onSelectType }) {
             className="group relative bg-white border-2 border-gray-200 rounded-lg p-6 text-left transition-all duration-200 hover:border-gray-900 hover:shadow-md active:scale-[0.98]"
           >
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center transition-colors duration-200 group-hover:bg-gray-900">
+              <div className="shrink-0 w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center transition-colors duration-200 group-hover:bg-gray-900">
                 <Icon className="text-gray-600 transition-colors duration-200 group-hover:text-white" size={24} />
               </div>
               <div className="flex-1 min-w-0">

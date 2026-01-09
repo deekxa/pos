@@ -1,75 +1,87 @@
-'use client'
+"use client";
 
-import ProtectedRoute from '@/components/ProtectedRoute'
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Edit, Trash2, Calendar, Tag, FileText, Hash, CheckCircle, Clock } from 'lucide-react'
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import {
+  ArrowLeft,
+  Edit,
+  Trash2,
+  Calendar,
+  Tag,
+  FileText,
+  Hash,
+  CheckCircle,
+  Clock,
+} from "lucide-react";
 
 export default function ViewTransactionPage() {
-  const router = useRouter()
-  const params = useParams()
-  const transactionId = parseInt(params.id)
-  
-  const [transaction, setTransaction] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [deleteModal, setDeleteModal] = useState(false)
+  const router = useRouter();
+  const params = useParams();
+  const transactionId = parseInt(params.id);
+
+  const [transaction, setTransaction] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem('ledger')
+    const stored = localStorage.getItem("ledger");
     if (stored) {
-      const ledger = JSON.parse(stored)
-      const found = ledger.find(t => t.id === transactionId)
-      
+      const ledger = JSON.parse(stored);
+      const found = ledger.find((t) => t.id === transactionId);
+
       if (found) {
-        setTransaction(found)
+        setTransaction(found);
       } else {
-        router.push('/ledgers')
+        router.push("/ledgers");
       }
     }
-    setLoading(false)
-  }, [transactionId, router])
+    setLoading(false);
+  }, [transactionId, router]);
 
   const handleDelete = () => {
-    const stored = localStorage.getItem('ledger')
+    const stored = localStorage.getItem("ledger");
     if (stored) {
-      const ledger = JSON.parse(stored)
-      const updated = ledger.filter(t => t.id !== transactionId)
-      localStorage.setItem('ledger', JSON.stringify(updated))
-      router.push('/ledgers')
+      const ledger = JSON.parse(stored);
+      const updated = ledger.filter((t) => t.id !== transactionId);
+      localStorage.setItem("ledger", JSON.stringify(updated));
+      router.push("/ledgers");
     }
-  }
+  };
 
   if (loading) {
     return (
-      <ProtectedRoute allowedRoles={['admin', 'branch_head']}>
+      <ProtectedRoute allowedRoles={["admin", "branch_head"]}>
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
           <p className="text-gray-500">Loading...</p>
         </div>
       </ProtectedRoute>
-    )
+    );
   }
 
   if (!transaction) {
-    return null
+    return null;
   }
 
   return (
-    <ProtectedRoute allowedRoles={['admin', 'branch_head']}>
+    <ProtectedRoute allowedRoles={["admin", "branch_head"]}>
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-3xl mx-auto">
-          
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => router.push('/ledgers')}
+                onClick={() => router.push("/ledgers")}
                 className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition-all"
               >
                 <ArrowLeft className="text-gray-600" size={20} />
               </button>
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Transaction Details</h1>
-                <p className="text-sm text-gray-500 mt-0.5">{transaction.reference}</p>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  Transaction Details
+                </h1>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {transaction.reference}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -90,16 +102,15 @@ export default function ViewTransactionPage() {
             </div>
           </div>
 
-          {/* Transaction Card */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-            
-            {/* Amount Banner */}
-            <div className="px-6 py-10 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+            <div className="px-6 py-10 border-b border-gray-200 bg-linear-to-br from-gray-50 to-white">
               <div className="text-center">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Transaction Amount</p>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Transaction Amount
+                </p>
                 <div className="inline-flex items-baseline gap-1">
                   <span className="text-2xl font-semibold text-gray-400">
-                    {transaction.amount >= 0 ? '+' : '-'}
+                    {transaction.amount >= 0 ? "+" : "-"}
                   </span>
                   <h2 className="text-5xl font-bold text-gray-900">
                     रु{Math.abs(transaction.amount).toLocaleString()}
@@ -108,30 +119,33 @@ export default function ViewTransactionPage() {
               </div>
             </div>
 
-            {/* Transaction Info */}
             <div className="p-6 space-y-6">
-              
-              {/* Type & Status Row */}
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center px-3 py-1.5 bg-gray-900 text-white rounded-md text-sm font-medium">
                   {transaction.type}
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm font-medium border border-gray-200">
-                  {transaction.status === 'Completed' ? <CheckCircle size={14} /> : <Clock size={14} />}
+                  {transaction.status === "Completed" ? (
+                    <CheckCircle size={14} />
+                  ) : (
+                    <Clock size={14} />
+                  )}
                   {transaction.status}
                 </span>
               </div>
 
-              {/* Details Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                
                 <div className="flex items-start gap-3 group">
                   <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100 group-hover:border-gray-200 transition-colors">
                     <Calendar className="text-gray-500" size={18} />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Date</p>
-                    <p className="text-sm font-semibold text-gray-900">{transaction.date}</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                      Date
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {transaction.date}
+                    </p>
                   </div>
                 </div>
 
@@ -140,8 +154,12 @@ export default function ViewTransactionPage() {
                     <Hash className="text-gray-500" size={18} />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Reference</p>
-                    <p className="text-sm font-semibold text-gray-900 font-mono">{transaction.reference}</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                      Reference
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900 font-mono">
+                      {transaction.reference}
+                    </p>
                   </div>
                 </div>
 
@@ -150,8 +168,12 @@ export default function ViewTransactionPage() {
                     <Tag className="text-gray-500" size={18} />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Category</p>
-                    <p className="text-sm font-semibold text-gray-900">{transaction.category}</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                      Category
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {transaction.category}
+                    </p>
                   </div>
                 </div>
 
@@ -160,22 +182,28 @@ export default function ViewTransactionPage() {
                     <FileText className="text-gray-500" size={18} />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Transaction ID</p>
-                    <p className="text-sm font-semibold text-gray-900">#{transaction.id}</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                      Transaction ID
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      #{transaction.id}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Description */}
               <div className="pt-4 border-t border-gray-100">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Description</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{transaction.description}</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Description
+                </p>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {transaction.description}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Delete Confirmation Modal */}
         {deleteModal && (
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl animate-in zoom-in duration-200">
@@ -186,7 +214,8 @@ export default function ViewTransactionPage() {
                 Delete Transaction?
               </h3>
               <p className="text-center text-gray-600 text-sm leading-relaxed mb-6">
-                This will permanently remove this transaction from your ledger. This action cannot be undone.
+                This will permanently remove this transaction from your ledger.
+                This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
@@ -207,5 +236,5 @@ export default function ViewTransactionPage() {
         )}
       </div>
     </ProtectedRoute>
-  )
+  );
 }

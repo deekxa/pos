@@ -28,15 +28,25 @@ export default function POSPage() {
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState("grid");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [deleteModal, setDeleteModal] = useState({ show: false, itemId: null, type: null });
-  const [reserveModal, setReserveModal] = useState({ show: false, tableId: null });
-  const [tableModal, setTableModal] = useState({ show: false, mode: "add", tableData: null });
+  const [deleteModal, setDeleteModal] = useState({
+    show: false,
+    itemId: null,
+    type: null,
+  });
+  const [reserveModal, setReserveModal] = useState({
+    show: false,
+    tableId: null,
+  });
+  const [tableModal, setTableModal] = useState({
+    show: false,
+    mode: "add",
+    tableData: null,
+  });
   const [orderMode, setOrderMode] = useState("table");
   const [individualOrderType, setIndividualOrderType] = useState(null);
   const [individualOrders, setIndividualOrders] = useState([]);
   const [showIndividualBilling, setShowIndividualBilling] = useState(false);
 
-  // Load data
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("inventory");
@@ -84,14 +94,78 @@ export default function POSPage() {
   }, [tables]);
 
   const getDefaultProducts = () => [
-    { id: 1, name: "Margherita Pizza", price: 450, stock: 50, category: "Main Course", sku: "FOOD-001", prepTime: 15 },
-    { id: 2, name: "Caesar Salad", price: 280, stock: 40, category: "Appetizer", sku: "FOOD-002", prepTime: 5 },
-    { id: 3, name: "Pasta Carbonara", price: 520, stock: 35, category: "Main Course", sku: "FOOD-003", prepTime: 20 },
-    { id: 4, name: "Tiramisu", price: 320, stock: 25, category: "Dessert", sku: "FOOD-004", prepTime: 5 },
-    { id: 5, name: "Cappuccino", price: 180, stock: 100, category: "Beverage", sku: "BEV-001", prepTime: 3 },
-    { id: 6, name: "Garlic Bread", price: 150, stock: 60, category: "Appetizer", sku: "FOOD-005", prepTime: 8 },
-    { id: 7, name: "Grilled Chicken", price: 680, stock: 30, category: "Main Course", sku: "FOOD-006", prepTime: 25 },
-    { id: 8, name: "Chocolate Lava Cake", price: 380, stock: 20, category: "Dessert", sku: "FOOD-007", prepTime: 10 },
+    {
+      id: 1,
+      name: "Margherita Pizza",
+      price: 450,
+      stock: 50,
+      category: "Main Course",
+      sku: "FOOD-001",
+      prepTime: 15,
+    },
+    {
+      id: 2,
+      name: "Caesar Salad",
+      price: 280,
+      stock: 40,
+      category: "Appetizer",
+      sku: "FOOD-002",
+      prepTime: 5,
+    },
+    {
+      id: 3,
+      name: "Pasta Carbonara",
+      price: 520,
+      stock: 35,
+      category: "Main Course",
+      sku: "FOOD-003",
+      prepTime: 20,
+    },
+    {
+      id: 4,
+      name: "Tiramisu",
+      price: 320,
+      stock: 25,
+      category: "Dessert",
+      sku: "FOOD-004",
+      prepTime: 5,
+    },
+    {
+      id: 5,
+      name: "Cappuccino",
+      price: 180,
+      stock: 100,
+      category: "Beverage",
+      sku: "BEV-001",
+      prepTime: 3,
+    },
+    {
+      id: 6,
+      name: "Garlic Bread",
+      price: 150,
+      stock: 60,
+      category: "Appetizer",
+      sku: "FOOD-005",
+      prepTime: 8,
+    },
+    {
+      id: 7,
+      name: "Grilled Chicken",
+      price: 680,
+      stock: 30,
+      category: "Main Course",
+      sku: "FOOD-006",
+      prepTime: 25,
+    },
+    {
+      id: 8,
+      name: "Chocolate Lava Cake",
+      price: 380,
+      stock: 20,
+      category: "Dessert",
+      sku: "FOOD-007",
+      prepTime: 10,
+    },
   ];
 
   const initializeTables = () => {
@@ -140,7 +214,11 @@ export default function POSPage() {
   };
 
   const updateTable = (tableNumber, capacity, tableId) => {
-    setTables(tables.map((t) => (t.id === tableId ? { ...t, number: tableNumber, capacity } : t)));
+    setTables(
+      tables.map((t) =>
+        t.id === tableId ? { ...t, number: tableNumber, capacity } : t
+      )
+    );
     setTableModal({ show: false, mode: "add", tableData: null });
     toast.success(`Table ${tableNumber} updated successfully!`);
   };
@@ -170,7 +248,18 @@ export default function POSPage() {
       return;
     }
     if (table.status === "reserved") {
-      setTables(tables.map((t) => (t.id === tableId ? { ...t, status: "available", reservedFor: null, reservedTime: null } : t)));
+      setTables(
+        tables.map((t) =>
+          t.id === tableId
+            ? {
+                ...t,
+                status: "available",
+                reservedFor: null,
+                reservedTime: null,
+              }
+            : t
+        )
+      );
       toast.success(`Table ${table.number} unreserved`);
     } else {
       setReserveModal({ show: true, tableId });
@@ -178,12 +267,21 @@ export default function POSPage() {
   };
 
   const confirmReservation = (name) => {
-    setTables(tables.map((t) =>
-      t.id === reserveModal.tableId
-        ? { ...t, status: "reserved", reservedFor: name, reservedTime: new Date().toISOString() }
-        : t
-    ));
-    const tableNumber = tables.find((t) => t.id === reserveModal.tableId)?.number;
+    setTables(
+      tables.map((t) =>
+        t.id === reserveModal.tableId
+          ? {
+              ...t,
+              status: "reserved",
+              reservedFor: name,
+              reservedTime: new Date().toISOString(),
+            }
+          : t
+      )
+    );
+    const tableNumber = tables.find(
+      (t) => t.id === reserveModal.tableId
+    )?.number;
     setReserveModal({ show: false, tableId: null });
     toast.success(`Table ${tableNumber} reserved for ${name}`);
   };
@@ -200,7 +298,9 @@ export default function POSPage() {
 
     const updatedTables = tables.map((table) => {
       if (table.id === selectedTable.id) {
-        const existingOrder = table.orders.find((order) => order.id === product.id);
+        const existingOrder = table.orders.find(
+          (order) => order.id === product.id
+        );
         if (existingOrder) {
           if (existingOrder.quantity >= product.stock) {
             toast.error("Not enough stock available");
@@ -211,7 +311,9 @@ export default function POSPage() {
             ...table,
             status: "occupied",
             orders: table.orders.map((order) =>
-              order.id === product.id ? { ...order, quantity: order.quantity + 1 } : order
+              order.id === product.id
+                ? { ...order, quantity: order.quantity + 1 }
+                : order
             ),
             startTime: table.startTime || new Date().toISOString(),
           };
@@ -220,7 +322,10 @@ export default function POSPage() {
           return {
             ...table,
             status: "occupied",
-            orders: [...table.orders, { ...product, quantity: 1, addedAt: new Date().toISOString() }],
+            orders: [
+              ...table.orders,
+              { ...product, quantity: 1, addedAt: new Date().toISOString() },
+            ],
             startTime: table.startTime || new Date().toISOString(),
           };
         }
@@ -237,7 +342,9 @@ export default function POSPage() {
     const updatedTables = tables.map((table) => {
       if (table.id === tableId) {
         if (newQty <= 0) {
-          const newOrders = table.orders.filter((order) => order.id !== productId);
+          const newOrders = table.orders.filter(
+            (order) => order.id !== productId
+          );
           return {
             ...table,
             orders: newOrders,
@@ -250,7 +357,9 @@ export default function POSPage() {
         } else {
           return {
             ...table,
-            orders: table.orders.map((order) => (order.id === productId ? { ...order, quantity: newQty } : order)),
+            orders: table.orders.map((order) =>
+              order.id === productId ? { ...order, quantity: newQty } : order
+            ),
           };
         }
       }
@@ -264,8 +373,12 @@ export default function POSPage() {
   const removeFromTable = (tableId, productId) => {
     const updatedTables = tables.map((table) => {
       if (table.id === tableId) {
-        const newOrders = table.orders.filter((order) => order.id !== productId);
-        const removedItem = table.orders.find((order) => order.id === productId);
+        const newOrders = table.orders.filter(
+          (order) => order.id !== productId
+        );
+        const removedItem = table.orders.find(
+          (order) => order.id === productId
+        );
         if (removedItem) {
           toast.success(`${removedItem.name} removed from table`);
         }
@@ -302,7 +415,10 @@ export default function POSPage() {
 
   const getTableTotal = (table) => {
     if (!table || !table.orders) return 0;
-    return table.orders.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return table.orders.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
   };
 
   const getTableItemCount = (table) => {
@@ -320,7 +436,9 @@ export default function POSPage() {
 
   const handlePaymentComplete = (transactionData) => {
     const updatedProducts = products.map((product) => {
-      const orderItem = selectedTable.orders.find((order) => order.id === product.id);
+      const orderItem = selectedTable.orders.find(
+        (order) => order.id === product.id
+      );
       if (orderItem) {
         return { ...product, stock: product.stock - orderItem.quantity };
       }
@@ -330,7 +448,9 @@ export default function POSPage() {
     setProducts(updatedProducts);
     localStorage.setItem("inventory", JSON.stringify(updatedProducts));
 
-    const existingHistory = JSON.parse(localStorage.getItem("sales_history") || "[]");
+    const existingHistory = JSON.parse(
+      localStorage.getItem("sales_history") || "[]"
+    );
     existingHistory.push(transactionData);
     localStorage.setItem("sales_history", JSON.stringify(existingHistory));
 
@@ -345,7 +465,9 @@ export default function POSPage() {
   const confirmDelete = () => {
     if (deleteModal.type === "product") {
       const product = products.find((p) => p.id === deleteModal.itemId);
-      setProducts(products.filter((product) => product.id !== deleteModal.itemId));
+      setProducts(
+        products.filter((product) => product.id !== deleteModal.itemId)
+      );
       toast.success(`${product?.name} deleted successfully`);
     } else if (deleteModal.type === "table") {
       deleteTable(deleteModal.itemId);
@@ -364,18 +486,27 @@ export default function POSPage() {
       return;
     }
 
-    const existingItem = individualOrders.find((item) => item.id === product.id);
+    const existingItem = individualOrders.find(
+      (item) => item.id === product.id
+    );
     if (existingItem) {
       if (existingItem.quantity >= product.stock) {
         toast.error("Not enough stock available");
         return;
       }
       setIndividualOrders(
-        individualOrders.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item))
+        individualOrders.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
       );
       toast.success(`${product.name} quantity increased`);
     } else {
-      setIndividualOrders([...individualOrders, { ...product, quantity: 1, addedAt: new Date().toISOString() }]);
+      setIndividualOrders([
+        ...individualOrders,
+        { ...product, quantity: 1, addedAt: new Date().toISOString() },
+      ]);
       toast.success(`${product.name} added to order`);
     }
   };
@@ -388,7 +519,9 @@ export default function POSPage() {
       toast.error("Not enough stock available");
     } else {
       setIndividualOrders(
-        individualOrders.map((item) => (item.id === productId ? { ...item, quantity: newQty } : item))
+        individualOrders.map((item) =>
+          item.id === productId ? { ...item, quantity: newQty } : item
+        )
       );
     }
   };
@@ -398,7 +531,9 @@ export default function POSPage() {
     if (removedItem) {
       toast.success(`${removedItem.name} removed from order`);
     }
-    setIndividualOrders(individualOrders.filter((item) => item.id !== productId));
+    setIndividualOrders(
+      individualOrders.filter((item) => item.id !== productId)
+    );
   };
 
   const handleCompleteIndividualOrder = () => {
@@ -407,7 +542,9 @@ export default function POSPage() {
 
   const handleIndividualBillingComplete = (transactionData) => {
     const updatedProducts = products.map((product) => {
-      const orderItem = individualOrders.find((order) => order.id === product.id);
+      const orderItem = individualOrders.find(
+        (order) => order.id === product.id
+      );
       if (orderItem) {
         return { ...product, stock: product.stock - orderItem.quantity };
       }
@@ -420,12 +557,17 @@ export default function POSPage() {
     const transaction = {
       orderType: individualOrderType,
       items: individualOrders,
-      subtotal: individualOrders.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      subtotal: individualOrders.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      ),
       ...transactionData,
       timestamp: new Date().toISOString(),
     };
 
-    const existingHistory = JSON.parse(localStorage.getItem("sales_history") || "[]");
+    const existingHistory = JSON.parse(
+      localStorage.getItem("sales_history") || "[]"
+    );
     existingHistory.push(transaction);
     localStorage.setItem("sales_history", JSON.stringify(existingHistory));
 
@@ -450,39 +592,72 @@ export default function POSPage() {
       p.name.toLowerCase().includes(searchLower) ||
       p.category.toLowerCase().includes(searchLower) ||
       (p.sku && p.sku.toLowerCase().includes(searchLower));
-    const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All" || p.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const getStockStatus = (stock) => {
-    if (stock === 0) return { color: "text-gray-500", bg: "bg-gray-50", label: "Out of stock", badge: "bg-gray-100 text-gray-600" };
-    if (stock <= 10) return { color: "text-red-600", bg: "bg-red-50", label: `${stock} left`, badge: "bg-red-100 text-red-600" };
-    if (stock <= 20) return { color: "text-amber-600", bg: "bg-amber-50", label: `${stock} in stock`, badge: "bg-amber-100 text-amber-600" };
-    return { color: "text-green-600", bg: "bg-green-50", label: `${stock} in stock`, badge: "bg-green-100 text-green-600" };
+    if (stock === 0)
+      return {
+        color: "text-gray-500",
+        bg: "bg-gray-50",
+        label: "Out of stock",
+        badge: "bg-gray-100 text-gray-600",
+      };
+    if (stock <= 10)
+      return {
+        color: "text-red-600",
+        bg: "bg-red-50",
+        label: `${stock} left`,
+        badge: "bg-red-100 text-red-600",
+      };
+    if (stock <= 20)
+      return {
+        color: "text-amber-600",
+        bg: "bg-amber-50",
+        label: `${stock} in stock`,
+        badge: "bg-amber-100 text-amber-600",
+      };
+    return {
+      color: "text-green-600",
+      bg: "bg-green-50",
+      label: `${stock} in stock`,
+      badge: "bg-green-100 text-green-600",
+    };
   };
 
   const getTableStatusColor = (status) => {
     switch (status) {
-      case "available": return "bg-green-50 border-green-200 hover:border-green-400";
-      case "occupied": return "bg-red-50 border-red-200 hover:border-red-400";
-      case "reserved": return "bg-amber-50 border-amber-200 hover:border-amber-400";
-      default: return "bg-gray-50 border-gray-200";
+      case "available":
+        return "bg-green-50 border-green-200 hover:border-green-400";
+      case "occupied":
+        return "bg-red-50 border-red-200 hover:border-red-400";
+      case "reserved":
+        return "bg-amber-50 border-amber-200 hover:border-amber-400";
+      default:
+        return "bg-gray-50 border-gray-200";
     }
   };
 
   const getTableStatusBadge = (status) => {
     switch (status) {
-      case "available": return "bg-green-100 text-green-700";
-      case "occupied": return "bg-red-100 text-red-700";
-      case "reserved": return "bg-amber-100 text-amber-700";
-      default: return "bg-gray-100 text-gray-700";
+      case "available":
+        return "bg-green-100 text-green-700";
+      case "occupied":
+        return "bg-red-100 text-red-700";
+      case "reserved":
+        return "bg-amber-100 text-amber-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
   };
 
-
   if (showBilling && selectedTable) {
     return (
-      <ProtectedRoute allowedRoles={["admin", "branch_head", "cashier", "worker"]}>
+      <ProtectedRoute
+        allowedRoles={["admin", "branch_head", "cashier", "worker"]}
+      >
         <BillingForm
           table={selectedTable}
           products={products}
@@ -495,7 +670,9 @@ export default function POSPage() {
 
   if (showIndividualBilling && individualOrders.length > 0) {
     return (
-      <ProtectedRoute allowedRoles={["admin", "branch_head", "cashier", "worker"]}>
+      <ProtectedRoute
+        allowedRoles={["admin", "branch_head", "cashier", "worker"]}
+      >
         <BillingForm
           table={{ number: individualOrderType, orders: individualOrders }}
           products={products}
@@ -507,7 +684,9 @@ export default function POSPage() {
   }
 
   return (
-    <ProtectedRoute allowedRoles={["admin", "branch_head", "cashier", "worker"]}>
+    <ProtectedRoute
+      allowedRoles={["admin", "branch_head", "cashier", "worker"]}
+    >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -552,7 +731,10 @@ export default function POSPage() {
 
         {showTableView && (
           <div className="flex justify-center">
-            <OrderTypeToggle orderMode={orderMode} setOrderMode={setOrderMode} />
+            <OrderTypeToggle
+              orderMode={orderMode}
+              setOrderMode={setOrderMode}
+            />
           </div>
         )}
 
@@ -570,10 +752,14 @@ export default function POSPage() {
             <TableGrid
               tables={tables}
               onSelectTable={selectTable}
-              onEditTable={(table) => setTableModal({ show: true, mode: "edit", tableData: table })}
+              onEditTable={(table) =>
+                setTableModal({ show: true, mode: "edit", tableData: table })
+              }
               onDeleteTable={(id) => openDeleteModal(id, "table")}
               onToggleReserve={toggleReserveTable}
-              onAddTable={() => setTableModal({ show: true, mode: "add", tableData: null })}
+              onAddTable={() =>
+                setTableModal({ show: true, mode: "add", tableData: null })
+              }
               getTableTotal={getTableTotal}
               getTableItemCount={getTableItemCount}
               getTableStatusColor={getTableStatusColor}
@@ -597,19 +783,27 @@ export default function POSPage() {
                 {filteredProducts.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16">
                     <Package className="text-gray-300 mb-3" size={48} />
-                    <p className="text-gray-500 font-medium">No products found</p>
-                    <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+                    <p className="text-gray-500 font-medium">
+                      No products found
+                    </p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Try adjusting your search or filters
+                    </p>
                   </div>
                 ) : viewMode === "grid" ? (
                   <ProductGrid
                     products={filteredProducts}
-                    onAddProduct={selectedTable ? addToTable : addToIndividualOrder}
+                    onAddProduct={
+                      selectedTable ? addToTable : addToIndividualOrder
+                    }
                     getStockStatus={getStockStatus}
                   />
                 ) : (
                   <ProductTable
                     products={filteredProducts}
-                    onAddProduct={selectedTable ? addToTable : addToIndividualOrder}
+                    onAddProduct={
+                      selectedTable ? addToTable : addToIndividualOrder
+                    }
                     onEditProduct={(id) => router.push(`/pos/edit/${id}`)}
                     onDeleteProduct={(id) => openDeleteModal(id, "product")}
                     getStockStatus={getStockStatus}
@@ -623,8 +817,12 @@ export default function POSPage() {
                 <CartWithBilling
                   orderInfo={{ table: selectedTable }}
                   orders={selectedTable.orders}
-                  onUpdateQuantity={(productId, newQty) => updateTableQuantity(selectedTable.id, productId, newQty)}
-                  onRemoveItem={(productId) => removeFromTable(selectedTable.id, productId)}
+                  onUpdateQuantity={(productId, newQty) =>
+                    updateTableQuantity(selectedTable.id, productId, newQty)
+                  }
+                  onRemoveItem={(productId) =>
+                    removeFromTable(selectedTable.id, productId)
+                  }
                   onProceedToBilling={goToBilling}
                   showCustomerInfo={false}
                 />
@@ -648,7 +846,9 @@ export default function POSPage() {
           show={deleteModal.show}
           type={deleteModal.type}
           onConfirm={confirmDelete}
-          onCancel={() => setDeleteModal({ show: false, itemId: null, type: null })}
+          onCancel={() =>
+            setDeleteModal({ show: false, itemId: null, type: null })
+          }
         />
         <ReserveModal
           show={reserveModal.show}
@@ -659,8 +859,14 @@ export default function POSPage() {
           show={tableModal.show}
           mode={tableModal.mode}
           tableData={tableModal.tableData}
-          onConfirm={(num, cap, id) => (tableModal.mode === "add" ? addNewTable(num, cap) : updateTable(num, cap, id))}
-          onCancel={() => setTableModal({ show: false, mode: "add", tableData: null })}
+          onConfirm={(num, cap, id) =>
+            tableModal.mode === "add"
+              ? addNewTable(num, cap)
+              : updateTable(num, cap, id)
+          }
+          onCancel={() =>
+            setTableModal({ show: false, mode: "add", tableData: null })
+          }
         />
       </div>
     </ProtectedRoute>

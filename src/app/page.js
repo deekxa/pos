@@ -264,7 +264,7 @@ export default function Dashboard() {
   ];
 
   const filteredQuickActions = quickActions.filter((action) =>
-    action.roles.includes(user?.role)
+    user?.role?.some(userRole => action.roles.includes(userRole))
   );
 
   return (
@@ -299,7 +299,7 @@ export default function Dashboard() {
               Access Level
             </div>
             <div className="font-bold uppercase">
-              {user?.role?.replace("_", " ")}
+              {user?.role?.join(", ").replace(/_/g, " ")}
             </div>
           </div>
         </div>

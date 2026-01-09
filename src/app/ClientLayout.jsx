@@ -9,13 +9,14 @@ import Navbar from '@/components/Layout/Navbar'
 export default function ClientLayout({ children }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, loading } = useAuth()
+  const { loggedIn, loading } = useAuth()
+  console.log(loggedIn,loading,"herehbdsdsabj 76")
   
   useEffect(() => {
-    if (!loading && !user && pathname !== '/login' && pathname !== '/unauthorized') {
+    if (!loading && !loggedIn && pathname !== '/login' && pathname !== '/unauthorized') {
       router.push('/login')
     }
-  }, [user, loading, pathname, router])
+  }, [loggedIn, loading, pathname, router])
   
   const isAuthPage = pathname === '/login' || pathname === '/unauthorized'
 
@@ -29,9 +30,10 @@ export default function ClientLayout({ children }) {
 
   if (isAuthPage) {
     return <>{children}</>
+
   }
 
-  if (!user) {
+  if (!loggedIn) {
     return null
   }
 

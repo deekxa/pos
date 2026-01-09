@@ -60,7 +60,7 @@ export default function SavedBillsPage() {
             <p><strong>Bill No:</strong> ${bill.billNumber}</p>
             <p><strong>Order Type:</strong> ${bill.orderInfo?.type || (bill.orderInfo?.table ? `Table ${bill.orderInfo.table.number}` : 'N/A')}</p>
             ${bill.customerName ? `<p><strong>Customer:</strong> ${bill.customerName}</p>` : ''}
-            ${bill.contactNumber ? `<p><strong>Contact:</strong> ${bill.contactNumber}</p>` : ''}
+            ${(bill.orderInfo?.type && bill.orderInfo?.type !== 'table' && bill.contactNumber) ? `<p><strong>Contact:</strong> ${bill.contactNumber}</p>` : ''}
             <p><strong>Date:</strong> ${new Date(bill.timestamp).toLocaleString()}</p>
           </div>
           <div class="items">
@@ -126,8 +126,8 @@ Phone: +123 456 7890
 
 Bill No: ${bill.billNumber}
 Order Type: ${bill.orderInfo?.type || (bill.orderInfo?.table ? `Table ${bill.orderInfo.table.number}` : 'N/A')}
-${bill.customerName ? `Customer: ${bill.customerName}` : ''}
-${bill.contactNumber ? `Contact: ${bill.contactNumber}` : ''}
+  ${bill.customerName ? `Customer: ${bill.customerName}` : ''}
+  ${(bill.orderInfo?.type && bill.orderInfo?.type !== 'table' && bill.contactNumber) ? `Contact: ${bill.contactNumber}` : ''}
 Date: ${new Date(bill.timestamp).toLocaleString()}
 
 ITEMS:
@@ -152,11 +152,13 @@ Thank you for your visit!
   };
 
   const filteredBills = savedBills.filter((bill) => {
+    const search = searchTerm.toLowerCase();
     const matchesSearch =
-      bill.billNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bill.orderInfo?.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (bill.orderInfo?.table && `table ${bill.orderInfo.table.number}`.includes(searchTerm.toLowerCase())) ||
-      (bill.customerName && bill.customerName.toLowerCase().includes(searchTerm.toLowerCase()));
+      bill.billNumber.toLowerCase().includes(search) ||
+      bill.orderInfo?.type?.toLowerCase().includes(search) ||
+      (bill.orderInfo?.table && `table ${bill.orderInfo.table.number}`.includes(search)) ||
+      (bill.customerName && bill.customerName.toLowerCase().includes(search)) ||
+      (bill.contactNumber && bill.contactNumber.toLowerCase().includes(search));
 
     const matchesFilter =
       filterType === "all" ||
@@ -200,7 +202,7 @@ Thank you for your visit!
                   <p className="font-semibold text-gray-900">{bill.customerName}</p>
                 </div>
               )}
-              {bill.contactNumber && (
+              {bill.orderInfo?.type && bill.orderInfo?.type !== 'table' && bill.contactNumber && (
                 <div className="col-span-2">
                   <p className="text-gray-500 text-xs mb-1">Contact Number</p>
                   <p className="font-semibold text-gray-900">{bill.contactNumber}</p>
@@ -358,9 +360,15 @@ Thank you for your visit!
                 </div>
 
                 {bill.customerName && (
-                  <div className="mb-3 text-sm">
+                  <div className="mb-1 text-sm">
                     <span className="text-gray-600">Customer: </span>
                     <span className="font-medium text-gray-900">{bill.customerName}</span>
+                  </div>
+                )}
+                {bill.orderInfo?.type && bill.orderInfo?.type !== 'table' && bill.contactNumber && (
+                  <div className="mb-3 text-sm">
+                    <span className="text-gray-600">Contact: </span>
+                    <span className="font-medium text-gray-900">{bill.contactNumber}</span>
                   </div>
                 )}
 
