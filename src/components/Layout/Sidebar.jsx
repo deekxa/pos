@@ -16,6 +16,9 @@ import {
   ChevronRight,
   Store,
   ChevronLeft,
+  Tags,
+  Box,
+  Archive,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -24,6 +27,104 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+
+  const menuSections = [
+    {
+      title: "Main",
+      items: [
+        {
+          icon: LayoutDashboard,
+          label: "Dashboard",
+          path: "/",
+          roles: ["admin", "branch_head", "cashier", "worker"],
+        },
+        {
+          icon: Zap,
+          label: "Orders/KOT",
+          path: "/pos",
+          roles: ["admin", "branch_head", "cashier", "worker"],
+        },
+      ],
+    },
+    {
+      title: "Management",
+      items: [
+        {
+          icon: Package,
+          label: "Inventory",
+          path: "/inventory",
+          roles: ["admin", "branch_head"],
+        },
+        {
+          icon: Tags,
+          label: "Categories",
+          path: "/categories",
+          roles: ["admin", "branch_head"],
+        },
+        {
+          icon: Box,
+          label: "Products",
+          path: "/products",
+          roles: ["admin", "branch_head"],
+        },
+      ],
+    },
+    {
+      title: "Finance",
+      items: [
+        {
+          icon: FileText,
+          label: "Ledgers",
+          path: "/ledgers",
+          roles: ["admin", "branch_head"],
+        },
+        {
+          icon: ShoppingBag,
+          label: "Purchase",
+          path: "/purchase",
+          roles: ["admin", "branch_head"],
+        },
+        {
+          icon: Archive,
+          label: "Saved Bills",
+          path: "/pos/saved-bills",
+          roles: ["admin", "branch_head", "cashier", "worker"],
+        },
+      ],
+    },
+    {
+      title: "Analytics",
+      items: [
+        {
+          icon: TrendingUp,
+          label: "Reports",
+          path: "/reports",
+          roles: ["admin", "branch_head"],
+        },
+      ],
+    },
+    {
+      title: "System",
+      items: [
+        {
+          icon: Building2,
+          label: "Branches",
+          path: "/branches",
+          roles: ["admin"],
+        },
+      ],
+    },
+  ];
+
+  const filteredSections = menuSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) =>
+        user?.role?.some((userRole) => item.roles.includes(userRole))
+      ),
+    }))
+    .filter((section) => section.items.length > 0);
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
@@ -32,67 +133,31 @@ export default function Sidebar() {
     }
   }, []);
 
+  useEffect(() => {
+    const nav = document.querySelector('.sidebar-nav');
+    if (nav) {
+      const checkScroll = () => {
+        const hasScroll = nav.scrollHeight > nav.clientHeight;
+        const isAtBottom = nav.scrollHeight - nav.scrollTop - nav.clientHeight < 5;
+        setShowScrollIndicator(hasScroll && !isAtBottom);
+      };
+      
+      checkScroll();
+      nav.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      
+      return () => {
+        nav.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
+    }
+  }, [filteredSections]);
+
   const toggleSidebar = () => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);
     localStorage.setItem("sidebarCollapsed", newState.toString());
   };
-
-  const menuItems = [
-    {
-      icon: LayoutDashboard,
-      label: "Dashboard",
-      path: "/",
-      roles: ["admin", "branch_head", "cashier", "worker"],
-    },
-    {
-      icon: Zap,
-      label: "Orders/KOT",
-      path: "/pos",
-      roles: ["admin", "branch_head", "cashier", "worker"],
-    },
-    {
-      icon: Package,
-      label: "Inventory",
-      path: "/inventory",
-      roles: ["admin", "branch_head"],
-    },
-    {
-      icon: Package,
-      label: "Products",
-      path: "/products",
-      roles: ["admin", "branch_head"],
-    },
-    {
-      icon: FileText,
-      label: "Ledgers",
-      path: "/ledgers",
-      roles: ["admin", "branch_head"],
-    },
-    {
-      icon: TrendingUp,
-      label: "Reports",
-      path: "/reports",
-      roles: ["admin", "branch_head"],
-    },
-    {
-      icon: ShoppingBag,
-      label: "Purchase",
-      path: "/purchase",
-      roles: ["admin", "branch_head"],
-    },
-    { icon: Building2, label: "Branches", path: "/branches", roles: ["admin"] },
-    {
-      icon: FileText,
-      label: "Saved Bills",
-      path: "/pos/saved-bills",
-      roles: ["admin", "branch_head", "cashier", "worker"],
-    },
-  ];
-
-  const filteredMenu = menuItems.filter((item) =>
-    user?.role?.some(userRole => item.roles.includes(userRole))
-  );
 
   const handleLogout = () => {
     logout();
@@ -140,71 +205,91 @@ export default function Sidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none">
-          <div className="space-y-1.5">
-            {filteredMenu.map((item, index) => {
-              const isActive = pathname === item.path;
-              const isHovered = hoveredItem === index;
-              const Icon = item.icon;
-              return (
-                <div key={item.path} className="relative">
-                  <Link
-                    href={item.path}
-                    onMouseEnter={() => setHoveredItem(index)}
-                    onMouseLeave={() => setHoveredItem(null)}
-                    className={`group flex items-center ${
-                      isCollapsed ? "justify-center" : "justify-between"
-                    } px-4 py-3 rounded-xl transition-all duration-200 ${
-                      isActive
-                        ? "bg-white text-black shadow-lg"
-                        : "text-gray-400 hover:text-white hover:bg-white/8"
-                    }`}
-                  >
-                    <div
-                      className={`flex items-center ${
-                        isCollapsed ? "" : "gap-3"
-                      }`}
-                    >
-                      <Icon
-                        size={20}
-                        strokeWidth={2.5}
-                        className={
-                          isActive
-                            ? "text-black"
-                            : "text-gray-500 group-hover:text-white"
-                        }
-                      />
-                      {!isCollapsed && (
-                        <span className="text-sm font-semibold">
-                          {item.label}
-                        </span>
-                      )}
-                    </div>
-                    {!isCollapsed && isActive && (
-                      <ChevronRight
-                        size={16}
-                        className="text-black"
-                        strokeWidth={3}
-                      />
-                    )}
-                  </Link>
+        <div className="relative flex-1 overflow-hidden">
+          <nav className="sidebar-nav h-full px-3 py-4 overflow-y-auto scrollbar-none">
+            <div className="space-y-4">
+            {filteredSections.map((section, sectionIndex) => (
+              <div key={section.title}>
+                {!isCollapsed && (
+                  <div className="px-4 mb-2">
+                    <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">
+                      {section.title}
+                    </span>
+                  </div>
+                )}
+                <div className="space-y-1.5">
+                  {section.items.map((item, itemIndex) => {
+                    const isActive = pathname === item.path;
+                    const globalIndex = sectionIndex * 10 + itemIndex;
+                    const isHovered = hoveredItem === globalIndex;
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.path} className="relative">
+                        <Link
+                          href={item.path}
+                          onMouseEnter={() => setHoveredItem(globalIndex)}
+                          onMouseLeave={() => setHoveredItem(null)}
+                          className={`group flex items-center ${
+                            isCollapsed ? "justify-center" : "justify-between"
+                          } px-4 py-3 rounded-xl transition-all duration-200 ${
+                            isActive
+                              ? "bg-white text-black shadow-lg"
+                              : "text-gray-400 hover:text-white hover:bg-white/8"
+                          }`}
+                        >
+                          <div
+                            className={`flex items-center ${
+                              isCollapsed ? "" : "gap-3"
+                            }`}
+                          >
+                            <Icon
+                              size={20}
+                              strokeWidth={2.5}
+                              className={
+                                isActive
+                                  ? "text-black"
+                                  : "text-gray-500 group-hover:text-white"
+                              }
+                            />
+                            {!isCollapsed && (
+                              <span className="text-sm font-semibold">
+                                {item.label}
+                              </span>
+                            )}
+                          </div>
+                          {!isCollapsed && isActive && (
+                            <ChevronRight
+                              size={16}
+                              className="text-black"
+                              strokeWidth={3}
+                            />
+                          )}
+                        </Link>
 
-                  {isCollapsed && isHovered && (
-                    <div
-                      className="fixed left-22 z-9999 pointer-events-none"
-                      style={{ top: `${index * 58 + 140}px` }}
-                    >
-                      <div className="bg-gray-900 text-white text-sm font-semibold px-3 py-2 rounded-lg shadow-xl border border-white/[0.1] whitespace-nowrap">
-                        {item.label}
-                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                        {isCollapsed && isHovered && (
+                          <div
+                            className="fixed left-22 z-9999 pointer-events-none"
+                            style={{ top: `${globalIndex * 58 + 140}px` }}
+                          >
+                            <div className="bg-gray-900 text-white text-sm font-semibold px-3 py-2 rounded-lg shadow-xl border border-white/[0.1] whitespace-nowrap">
+                              {item.label}
+                              <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </nav>
+          
+        {showScrollIndicator && (
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
+        )}
+        </div>
 
         <div className="p-4 border-t border-white/6">
           {!isCollapsed ? (

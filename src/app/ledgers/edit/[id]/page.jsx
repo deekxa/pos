@@ -10,10 +10,11 @@ export default function EditTransactionPage() {
   const params = useParams()
   const transactionId = parseInt(params.id)
   
+  const [ledgerCategories, setLedgerCategories] = useState([])
   const [formData, setFormData] = useState({
     date: '',
     type: 'Sale',
-    category: 'Revenue',
+    category: '',
     description: '',
     amount: '',
     reference: '',
@@ -23,6 +24,16 @@ export default function EditTransactionPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Load categories
+    const categoriesStored = localStorage.getItem('categories')
+    if (categoriesStored) {
+      try {
+        const categories = JSON.parse(categoriesStored)
+        setLedgerCategories(categories.ledger || [])
+      } catch {}
+    }
+
+    // Load transaction
     const stored = localStorage.getItem('ledger')
     if (stored) {
       const ledger = JSON.parse(stored)
@@ -151,12 +162,15 @@ export default function EditTransactionPage() {
                     required
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   >
-                    <option value="Revenue">Revenue</option>
-                    <option value="Inventory">Inventory</option>
-                    <option value="Operating">Operating</option>
-                    <option value="Payroll">Payroll</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Other">Other</option>
+                    {ledgerCategories.length === 0 ? (
+                      <option value="">No categories available</option>
+                    ) : (
+                      ledgerCategories.map((cat) => (
+                        <option key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 

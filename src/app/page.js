@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   ShoppingCart,
   Package,
@@ -20,224 +21,107 @@ import {
 export default function Dashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const [dashboardData, setDashboardData] = useState({
+    revenue: 0,
+    revenueChange: 0,
+    orders: 0,
+    ordersChange: 0,
+    products: 0,
+    productsChange: 0,
+    lowStock: 0,
+    lowStockChange: 0,
+    transactions: [],
+    lowStockItems: [],
+  });
 
-  const branchData = {
-    "Savory - ATS": {
-      revenue: 45800,
-      revenueChange: 15.3,
-      orders: 235,
-      ordersChange: 12.8,
-      products: 1234,
-      productsChange: 25,
-      lowStock: 23,
-      lowStockChange: -5,
-      transactions: [
-        {
-          id: "TXN-5234",
-          time: "2 mins ago",
-          items: 8,
-          total: 2450,
-          customer: "Walk-in",
-          status: "completed",
-          paymentMethod: "Cash",
-        },
-        {
-          id: "TXN-5233",
-          time: "12 mins ago",
-          items: 5,
-          total: 1890,
-          customer: "Suman Rai",
-          status: "completed",
-          paymentMethod: "UPI",
-        },
-        {
-          id: "TXN-5232",
-          time: "25 mins ago",
-          items: 12,
-          total: 4340,
-          customer: "Walk-in",
-          status: "completed",
-          paymentMethod: "Card",
-        },
-        {
-          id: "TXN-5231",
-          time: "40 mins ago",
-          items: 3,
-          total: 960,
-          customer: "Anita Sharma",
-          status: "completed",
-          paymentMethod: "Cash",
-        },
-      ],
-      lowStockItems: [
-        {
-          name: "Coke 500ml",
-          current: 15,
-          min: 60,
-          category: "Beverages",
-          sku: "BEV-002",
-        },
-        {
-          name: "Kurkure",
-          current: 10,
-          min: 40,
-          category: "Snacks",
-          sku: "SNK-015",
-        },
-        {
-          name: "Biscuits",
-          current: 8,
-          min: 30,
-          category: "Bakery",
-          sku: "BAK-008",
-        },
-      ],
-    },
-    "Butwal Branch": {
-      revenue: 24500,
-      revenueChange: 12.5,
-      orders: 145,
-      ordersChange: 8.2,
-      products: 856,
-      productsChange: 15,
-      lowStock: 18,
-      lowStockChange: -3,
-      transactions: [
-        {
-          id: "TXN-3234",
-          time: "5 mins ago",
-          items: 5,
-          total: 1250,
-          customer: "Walk-in",
-          status: "completed",
-          paymentMethod: "Cash",
-        },
-        {
-          id: "TXN-3233",
-          time: "18 mins ago",
-          items: 3,
-          total: 890,
-          customer: "Raj Kumar",
-          status: "completed",
-          paymentMethod: "UPI",
-        },
-        {
-          id: "TXN-3232",
-          time: "32 mins ago",
-          items: 8,
-          total: 2340,
-          customer: "Walk-in",
-          status: "completed",
-          paymentMethod: "Card",
-        },
-        {
-          id: "TXN-3231",
-          time: "48 mins ago",
-          items: 2,
-          total: 560,
-          customer: "Priya Singh",
-          status: "completed",
-          paymentMethod: "Cash",
-        },
-      ],
-      lowStockItems: [
-        {
-          name: "Pepsi 500ml",
-          current: 12,
-          min: 50,
-          category: "Beverages",
-          sku: "BEV-001",
-        },
-        {
-          name: "Lay's Chips",
-          current: 8,
-          min: 30,
-          category: "Snacks",
-          sku: "SNK-024",
-        },
-        {
-          name: "Bread",
-          current: 5,
-          min: 20,
-          category: "Bakery",
-          sku: "BAK-012",
-        },
-      ],
-    },
-    "Bhairahawa Branch": {
-      revenue: 18200,
-      revenueChange: 9.8,
-      orders: 98,
-      ordersChange: 6.5,
-      products: 645,
-      productsChange: 12,
-      lowStock: 15,
-      lowStockChange: -2,
-      transactions: [
-        {
-          id: "TXN-7234",
-          time: "3 mins ago",
-          items: 4,
-          total: 980,
-          customer: "Walk-in",
-          status: "completed",
-          paymentMethod: "Cash",
-        },
-        {
-          id: "TXN-7233",
-          time: "20 mins ago",
-          items: 6,
-          total: 1450,
-          customer: "Krishna Thapa",
-          status: "completed",
-          paymentMethod: "UPI",
-        },
-        {
-          id: "TXN-7232",
-          time: "35 mins ago",
-          items: 3,
-          total: 720,
-          customer: "Walk-in",
-          status: "completed",
-          paymentMethod: "Card",
-        },
-        {
-          id: "TXN-7231",
-          time: "52 mins ago",
-          items: 5,
-          total: 1100,
-          customer: "Rita Gurung",
-          status: "completed",
-          paymentMethod: "Cash",
-        },
-      ],
-      lowStockItems: [
-        {
-          name: "Sprite 500ml",
-          current: 10,
-          min: 45,
-          category: "Beverages",
-          sku: "BEV-003",
-        },
-        {
-          name: "Wai Wai",
-          current: 6,
-          min: 35,
-          category: "Snacks",
-          sku: "SNK-030",
-        },
-        {
-          name: "Milk",
-          current: 7,
-          min: 25,
-          category: "Dairy",
-          sku: "DRY-005",
-        },
-      ],
-    },
-  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedPOS = localStorage.getItem("pos");
+      const storedProducts = localStorage.getItem("products");
+      const storedInventory = localStorage.getItem("inventory");
 
-  const currentBranch = branchData[user?.branch] || branchData["Butwal Branch"];
+      try {
+        const posTransactions = storedPOS ? JSON.parse(storedPOS) : [];
+        const products = storedProducts ? JSON.parse(storedProducts) : [];
+        const inventory = storedInventory ? JSON.parse(storedInventory) : [];
+
+        // Calculate today's revenue and orders
+        const today = new Date().toISOString().split("T")[0];
+        const todayTransactions = posTransactions.filter((t) => {
+          const txnDate = t.date?.split("T")[0] || "";
+          return txnDate === today;
+        });
+
+        const revenue = todayTransactions.reduce((sum, t) => sum + (t.total || 0), 0);
+        const orders = todayTransactions.length;
+
+        // Get low stock items (below reorder level)
+        const lowStockItems = inventory
+          .filter((item) => {
+            const quantity = item.quantity || 0;
+            const reorderLevel = item.reorderLevel || item.minStock || 20;
+            return quantity < reorderLevel;
+          })
+          .slice(0, 3)
+          .map((item) => ({
+            name: item.name || "Unknown",
+            current: item.quantity || 0,
+            min: item.reorderLevel || item.minStock || 20,
+            category: item.category || "General",
+            sku: item.sku || `SKU-${item.id}`,
+          }));
+
+        // Get recent transactions (last 4)
+        const recentTransactions = posTransactions
+          .sort((a, b) => {
+            const dateA = new Date(a.date || a.createdAt || 0);
+            const dateB = new Date(b.date || b.createdAt || 0);
+            return dateB - dateA;
+          })
+          .slice(0, 4)
+          .map((txn) => {
+            const itemCount = Array.isArray(txn.items)
+              ? txn.items.reduce((sum, item) => sum + (item.quantity || 0), 0)
+              : 0;
+            
+            const txnDate = new Date(txn.date || txn.createdAt || Date.now());
+            const now = new Date();
+            const diffMinutes = Math.floor((now - txnDate) / (1000 * 60));
+            
+            let timeAgo = "";
+            if (diffMinutes < 1) timeAgo = "Just now";
+            else if (diffMinutes < 60) timeAgo = `${diffMinutes} mins ago`;
+            else if (diffMinutes < 1440) timeAgo = `${Math.floor(diffMinutes / 60)} hours ago`;
+            else timeAgo = `${Math.floor(diffMinutes / 1440)} days ago`;
+
+            return {
+              id: txn.invoiceNumber || txn.id || `TXN-${Math.random().toString(36).substr(2, 6)}`,
+              time: timeAgo,
+              items: itemCount,
+              total: txn.total || 0,
+              customer: txn.customerName || "Walk-in",
+              status: txn.status || "completed",
+              paymentMethod: txn.paymentMethod || "Cash",
+            };
+          });
+
+        setDashboardData({
+          revenue,
+          revenueChange: 0, // Would need historical data
+          orders,
+          ordersChange: 0, // Would need historical data
+          products: products.length,
+          productsChange: 0, // Would need historical data
+          lowStock: lowStockItems.length,
+          lowStockChange: 0,
+          transactions: recentTransactions,
+          lowStockItems,
+        });
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      }
+    }
+  }, []);
 
   const quickActions = [
     {
@@ -338,7 +222,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 rounded">
               <TrendingUp className="w-3 h-3 text-green-600" />
               <span className="text-xs font-bold text-green-700">
-                +{currentBranch.revenueChange}%
+                +{dashboardData.revenueChange}%
               </span>
             </div>
           </div>
@@ -347,7 +231,7 @@ export default function Dashboard() {
           </div>
 
           <div className="text-2xl font-bold text-gray-900">
-            रु{currentBranch.revenue.toLocaleString()}
+            रु{dashboardData.revenue.toLocaleString()}
           </div>
           <div className="text-xs text-gray-500 mt-2">Since morning</div>
         </div>
@@ -360,7 +244,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 rounded">
               <TrendingUp className="w-3 h-3 text-green-600" />
               <span className="text-xs font-bold text-green-700">
-                +{currentBranch.ordersChange}%
+                +{dashboardData.ordersChange}%
               </span>
             </div>
           </div>
@@ -368,7 +252,7 @@ export default function Dashboard() {
             Transactions
           </div>
           <div className="text-2xl font-bold text-gray-900">
-            {currentBranch.orders}
+            {dashboardData.orders}
           </div>
           <div className="text-xs text-gray-500 mt-2">Completed today</div>
         </div>
@@ -379,14 +263,14 @@ export default function Dashboard() {
               <Package className="w-5 h-5 text-gray-700" />
             </div>
             <div className="px-2 py-1 bg-gray-100 border border-gray-200 rounded text-xs font-bold text-gray-700">
-              +{currentBranch.productsChange}
+              +{dashboardData.productsChange}
             </div>
           </div>
           <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
             Catalog Size
           </div>
           <div className="text-2xl font-bold text-gray-900">
-            {currentBranch.products}
+            {dashboardData.products}
           </div>
           <div className="text-xs text-gray-500 mt-2">Active SKUs</div>
         </div>
@@ -399,7 +283,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-1 px-2 py-1 bg-red-50 border border-red-200 rounded">
               <TrendingDown className="w-3 h-3 text-red-600" />
               <span className="text-xs font-bold text-red-700">
-                {currentBranch.lowStockChange}
+                {dashboardData.lowStockChange}
               </span>
             </div>
           </div>
@@ -407,7 +291,7 @@ export default function Dashboard() {
             Stock Alerts
           </div>
           <div className="text-2xl font-bold text-red-600">
-            {currentBranch.lowStock}
+            {dashboardData.lowStock}
           </div>
           <div className="text-xs text-gray-500 mt-2">Critical items</div>
         </div>
@@ -435,38 +319,44 @@ export default function Dashboard() {
           </div>
 
           <div className="divide-y divide-gray-100">
-            {currentBranch.transactions.map((txn, idx) => (
-              <div
-                key={idx}
-                className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold text-gray-900 text-sm">
-                        {txn.id}
-                      </span>
-                      <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
-                        Completed
-                      </span>
+            {dashboardData.transactions.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                No transactions yet today
+              </div>
+            ) : (
+              dashboardData.transactions.map((txn, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold text-gray-900 text-sm">
+                          {txn.id}
+                        </span>
+                        <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                          {txn.status === "completed" ? "Completed" : txn.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <span className="font-medium">{txn.customer}</span>
+                        <span className="text-gray-300">•</span>
+                        <span>{txn.items} items</span>
+                        <span className="text-gray-300">•</span>
+                        <span>{txn.paymentMethod}</span>
+                        <span className="text-gray-300">•</span>
+                        <span>{txn.time}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <span className="font-medium">{txn.customer}</span>
-                      <span className="text-gray-300">•</span>
-                      <span>{txn.items} items</span>
-                      <span className="text-gray-300">•</span>
-                      <span>{txn.paymentMethod}</span>
-                      <span className="text-gray-300">•</span>
-                      <span>{txn.time}</span>
-                    </div>
-                  </div>
 
-                  <div className="font-bold text-gray-900">
-                    रु{txn.total.toLocaleString()}
+                    <div className="font-bold text-gray-900">
+                      रु{txn.total.toLocaleString()}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -491,46 +381,52 @@ export default function Dashboard() {
           </div>
 
           <div className="p-4 space-y-3">
-            {currentBranch.lowStockItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="p-3 bg-red-50 border border-red-200 rounded-lg"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-gray-900 text-sm truncate">
-                      {item.name}
+            {dashboardData.lowStockItems.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                All items are well stocked
+              </div>
+            ) : (
+              dashboardData.lowStockItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-red-50 border border-red-200 rounded-lg"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-gray-900 text-sm truncate">
+                        {item.name}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-0.5">
+                        {item.category} • {item.sku}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-600 mt-0.5">
-                      {item.category} • {item.sku}
-                    </div>
-                  </div>
-                  <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded whitespace-nowrap ml-2">
-                    CRITICAL
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">Inventory level</span>
-                    <span className="font-bold text-gray-900">
-                      {item.current} / {item.min} units
+                    <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded whitespace-nowrap ml-2">
+                      CRITICAL
                     </span>
                   </div>
-                  <div className="relative w-full bg-red-200 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="absolute inset-y-0 left-0 bg-red-600 rounded-full"
-                      style={{
-                        width: `${Math.min(
-                          (item.current / item.min) * 100,
-                          100
-                        )}%`,
-                      }}
-                    />
+
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-600">Inventory level</span>
+                      <span className="font-bold text-gray-900">
+                        {item.current} / {item.min} units
+                      </span>
+                    </div>
+                    <div className="relative w-full bg-red-200 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="absolute inset-y-0 left-0 bg-red-600 rounded-full"
+                        style={{
+                          width: `${Math.min(
+                            (item.current / item.min) * 100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

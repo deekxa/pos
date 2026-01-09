@@ -7,26 +7,26 @@ export default function Navbar() {
   const { user } = useAuth()
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between flex-shrink-0">
-      
+    <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between flex-shrink-0 shadow-sm">
       
       <div className="flex-1">
       </div>
 
-    
-      <div className="flex items-center gap-3">
-        <button className="relative p-2 hover:bg-gray-50 rounded-lg transition-colors">
-          <Bell size={20} className="text-gray-600" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+      <div className="flex items-center gap-4">
+        {/* Notification Bell */}
+        <button className="relative p-2 hover:bg-gray-100 rounded-full transition-all duration-200 group">
+          <Bell size={20} className="text-gray-600 group-hover:text-gray-900" />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         </button>
         
-        <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
+        {/* User Profile */}
+        <div className="flex items-center gap-3 pl-4 border-l border-gray-300">
           <div className="text-right">
-            <p className="text-sm font-semibold text-gray-900">{user?.name || 'User'}</p>
-            <p className="text-xs text-gray-500">{user?.branch || 'Branch'}</p>
+            <p className="text-sm font-semibold text-gray-900 leading-tight">{user?.name || 'User'}</p>
+            <p className="text-xs text-gray-500 capitalize mt-0.5">{user?.role || 'Role'}</p>
           </div>
-          <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center">
-            <span className="text-white text-sm font-bold">
+          <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-md ring-2 ring-blue-100">
+            <span className="text-white text-base font-semibold">
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>

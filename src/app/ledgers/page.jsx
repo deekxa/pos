@@ -19,6 +19,7 @@ const defaultTransactions = [
 
 export default function LedgersPage() {
   const router = useRouter()
+  const [ledgerCategories, setLedgerCategories] = useState([])
   const [transactions, setTransactions] = useState(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('ledger')
@@ -45,6 +46,18 @@ export default function LedgersPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('categories')
+      if (stored) {
+        try {
+          const categories = JSON.parse(stored)
+          setLedgerCategories(categories.ledger || [])
+        } catch {}
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
       localStorage.setItem('ledger', JSON.stringify(transactions))
     }
   }, [transactions])
@@ -59,7 +72,7 @@ export default function LedgersPage() {
   
   const netBalance = totalIncome - totalExpense
 
-  const categories = ['all', ...new Set(transactions.map(t => t.category))]
+  const categories = ['all', ...ledgerCategories.map(cat => cat.name)]
   const types = ['all', ...new Set(transactions.map(t => t.type))]
 
   const filteredTransactions = transactions.filter(t => {

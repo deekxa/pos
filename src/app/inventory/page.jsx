@@ -6,6 +6,7 @@ import {
   Package,
   AlertTriangle,
   TrendingUp,
+  Eye,
   Edit,
   Trash2,
   Search,
@@ -495,6 +496,15 @@ export default function InventoryPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() =>
+                              router.push(`/inventory/view/${item.id}`)
+                            }
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Eye size={16} />
+                          </button>
                           <button
                             onClick={() =>
                               router.push(`/inventory/edit/${item.id}`)

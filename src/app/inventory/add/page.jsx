@@ -1,20 +1,34 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 export default function AddInventoryPage() {
   const router = useRouter();
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
     unit: "",
     stock: "",
     price: "",
-    reorderLevel: 20,
+    reorderLevel: "",
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Load inventory categories
+      const storedCategories = localStorage.getItem("categories");
+      if (storedCategories) {
+        try {
+          const allCategories = JSON.parse(storedCategories);
+          setCategories(allCategories.inventory || []);
+        } catch {}
+      }
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,20 +44,20 @@ export default function AddInventoryPage() {
     const stored = localStorage.getItem("inventory");
     const inventory = stored ? JSON.parse(stored) : [];
 
+    const newId =
+      inventory.length > 0 ? Math.max(...inventory.map((i) => i.id)) + 1 : 1;
     const currentDate = new Date().toISOString().split("T")[0];
 
-    const itemData = {
+    const newItem = {
+      id: newId,
       ...formData,
-      id: Math.max(...inventory.map((i) => i.id), 0) + 1,
       stock: parseFloat(formData.stock),
       price: parseFloat(formData.price),
       reorderLevel: parseInt(formData.reorderLevel),
       lastUpdated: currentDate,
     };
 
-    inventory.push(itemData);
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-
+    localStorage.setItem("inventory", JSON.stringify([...inventory, newItem]));
     router.push("/inventory");
   };
 
@@ -59,10 +73,10 @@ export default function AddInventoryPage() {
           </button>
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">
-              Add New Item
+              Add Inventory Item
             </h1>
             <p className="text-gray-500 mt-1">
-              Add a new inventory item to your stock
+              Add a new raw ingredient or supply
             </p>
           </div>
         </div>
@@ -97,21 +111,17 @@ export default function AddInventoryPage() {
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 >
                   <option value="">Select category</option>
-                  <option value="Dairy">Dairy</option>
-                  <option value="Meat">Meat</option>
-                  <option value="Vegetables">Vegetables</option>
-                  <option value="Sauces">Sauces</option>
-                  <option value="Dry Goods">Dry Goods</option>
-                  <option value="Oils & Condiments">Oils & Condiments</option>
-                  <option value="Herbs & Spices">Herbs & Spices</option>
-                  <option value="Beverages">Beverages</option>
-                  <option value="Other">Other</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Unit of Measure *
+                  Unit *
                 </label>
                 <select
                   name="unit"
@@ -125,10 +135,9 @@ export default function AddInventoryPage() {
                   <option value="g">Grams (g)</option>
                   <option value="liters">Liters</option>
                   <option value="ml">Milliliters (ml)</option>
-                  <option value="pieces">Pieces</option>
-                  <option value="bottles">Bottles</option>
-                  <option value="cans">Cans</option>
-                  <option value="packets">Packets</option>
+                  <option value="pcs">Pieces (pcs)</option>
+                  <option value="box">Box</option>
+                  <option value="pack">Pack</option>
                 </select>
               </div>
             </div>
@@ -136,7 +145,7 @@ export default function AddInventoryPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Initial Stock Quantity *
+                  Current Stock *
                 </label>
                 <input
                   type="number"
@@ -147,93 +156,77 @@ export default function AddInventoryPage() {
                   min="0"
                   step="0.01"
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  placeholder="0"
+                  placeholder="50"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Current quantity in stock
-                </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price per Unit (रु) *
+                  Reorder Level *
                 </label>
                 <input
                   type="number"
-                  name="price"
-                  value={formData.price}
+                  name="reorderLevel"
+                  value={formData.reorderLevel}
                   onChange={handleChange}
                   required
                   min="0"
-                  step="0.01"
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  placeholder="0.00"
+                  placeholder="20"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Cost per unit of measure
+                  Alert when stock falls below this level
                 </p>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Reorder Level *
+                Unit Price (रु) *
               </label>
               <input
                 type="number"
-                name="reorderLevel"
-                value={formData.reorderLevel}
+                name="price"
+                value={formData.price}
                 onChange={handleChange}
                 required
                 min="0"
+                step="0.01"
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                placeholder="20"
+                placeholder="800"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Alert when stock falls below this level
+                Price per {formData.unit || "unit"}
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">
-                Stock Value Preview
-              </h3>
-              <div className="text-sm text-gray-600">
-                {formData.stock && formData.price ? (
-                  <>
-                    <p>
-                      Total Value:{" "}
-                      <span className="font-semibold text-gray-900">
-                        रु
-                        {(
-                          parseFloat(formData.stock) * parseFloat(formData.price)
-                        ).toLocaleString()}
-                      </span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formData.stock} {formData.unit || "units"} × रु
-                      {formData.price}
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-gray-400">
-                    Enter stock quantity and price to see total value
-                  </p>
-                )}
+            {formData.stock && formData.price && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-blue-700 font-medium">
+                    Total Inventory Value:
+                  </span>
+                  <span className="text-blue-900 font-semibold text-lg">
+                    रु
+                    {(
+                      parseFloat(formData.stock) * parseFloat(formData.price)
+                    ).toLocaleString()}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
                 onClick={() => router.push("/inventory")}
-                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all"
               >
                 Add Item
               </button>

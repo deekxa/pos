@@ -1,21 +1,38 @@
 'use client'
 
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save } from 'lucide-react'
 
 export default function AddTransactionPage() {
   const router = useRouter()
+  const [ledgerCategories, setLedgerCategories] = useState([])
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     type: 'Sale',
-    category: 'Revenue',
+    category: '',
     description: '',
     amount: '',
     reference: '',
     status: 'Completed'
   })
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('categories')
+      if (stored) {
+        try {
+          const categories = JSON.parse(stored)
+          const ledgerCats = categories.ledger || []
+          setLedgerCategories(ledgerCats)
+          if (ledgerCats.length > 0 && !formData.category) {
+            setFormData(prev => ({ ...prev, category: ledgerCats[0].name }))
+          }
+        } catch {}
+      }
+    }
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -105,12 +122,15 @@ export default function AddTransactionPage() {
                     required
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   >
-                    <option value="Revenue">Revenue</option>
-                    <option value="Inventory">Inventory</option>
-                    <option value="Operating">Operating</option>
-                    <option value="Payroll">Payroll</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Other">Other</option>
+                    {ledgerCategories.length === 0 ? (
+                      <option value="">No categories available</option>
+                    ) : (
+                      ledgerCategories.map((cat) => (
+                        <option key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 

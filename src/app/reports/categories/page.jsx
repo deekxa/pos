@@ -1,7 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Download,
@@ -13,45 +13,90 @@ import { useRouter } from "next/navigation";
 
 export default function CategoryReportPage() {
   const router = useRouter();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = [
-    {
-      id: 1,
-      name: "Electronics",
-      revenue: 125000,
-      percentage: 36.8,
-      units: 287,
-      growth: 12.5,
-      topProduct: "Product A",
-    },
-    {
-      id: 2,
-      name: "Clothing",
-      revenue: 98000,
-      percentage: 28.8,
-      units: 234,
-      growth: -3.2,
-      topProduct: "Product B",
-    },
-    {
-      id: 3,
-      name: "Food",
-      revenue: 67000,
-      percentage: 19.7,
-      units: 156,
-      growth: 8.7,
-      topProduct: "Product C",
-    },
-    {
-      id: 4,
-      name: "Other",
-      revenue: 50000,
-      percentage: 14.7,
-      units: 98,
-      growth: 5.3,
-      topProduct: "Product F",
-    },
-  ];
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedCategories = localStorage.getItem("categories");
+      const storedProducts = localStorage.getItem("products");
+      const storedPOS = localStorage.getItem("pos");
+
+      if (storedCategories && storedProducts) {
+        try {
+          const categoriesData = JSON.parse(storedCategories);
+          const products = JSON.parse(storedProducts);
+          const posTransactions = storedPOS ? JSON.parse(storedPOS) : [];
+
+      
+          const productCategories = categoriesData.products || [];
+
+         
+          const categoryStats = productCategories.map((cat) => {
+            const categoryProducts = products.filter(
+              (p) => p.category === cat.name
+            );
+
+            // Calculate revenue from POS sales for this category
+            let catRevenue = 0;
+            let unitsSold = 0;
+
+            posTransactions.forEach((transaction) => {
+              if (transaction.items && Array.isArray(transaction.items)) {
+                transaction.items.forEach((item) => {
+                  const product = products.find((p) => p.id === item.productId || p.name === item.name);
+                  if (product && product.category === cat.name) {
+                    catRevenue += (item.price || 0) * (item.quantity || 0);
+                    unitsSold += item.quantity || 0;
+                  }
+                });
+              }
+            });
+
+            // Find top selling product in this category
+            const productSales = {};
+            posTransactions.forEach((transaction) => {
+              if (transaction.items && Array.isArray(transaction.items)) {
+                transaction.items.forEach((item) => {
+                  const product = products.find((p) => p.id === item.productId || p.name === item.name);
+                  if (product && product.category === cat.name) {
+                    productSales[product.name] = (productSales[product.name] || 0) + (item.quantity || 0);
+                  }
+                });
+              }
+            });
+
+            const topProduct = Object.keys(productSales).length > 0
+              ? Object.keys(productSales).reduce((a, b) => productSales[a] > productSales[b] ? a : b)
+              : categoryProducts[0]?.name || "N/A";
+
+            return {
+              id: cat.id,
+              name: cat.name,
+              revenue: catRevenue,
+              percentage: 0, // Will calculate after
+              units: unitsSold,
+              totalProducts: categoryProducts.length,
+              growth: 0, // Calculate based on historical data if available
+              topProduct: topProduct,
+            };
+          });
+
+          // Calculate percentages
+          const totalRev = categoryStats.reduce((sum, cat) => sum + cat.revenue, 0);
+          const statsWithPercentage = categoryStats.map((cat) => ({
+            ...cat,
+            percentage: totalRev > 0 ? ((cat.revenue / totalRev) * 100).toFixed(1) : 0,
+          }));
+
+          setCategories(statsWithPercentage);
+        } catch (error) {
+          console.error("Error loading categories:", error);
+        }
+      }
+      setLoading(false);
+    }
+  }, []);
 
   const totalRevenue = categories.reduce((sum, cat) => sum + cat.revenue, 0);
   const totalUnits = categories.reduce((sum, cat) => sum + cat.units, 0);
@@ -184,64 +229,72 @@ export default function CategoryReportPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {categories.map((cat) => (
-                  <tr
-                    key={cat.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100">
-                          <Tag className="text-gray-500" size={18} />
-                        </div>
-                        <span className="font-semibold text-gray-900 text-sm">
-                          {cat.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-right font-bold text-gray-900 text-sm">
-                      रु{cat.revenue.toLocaleString()}
-                    </td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${getGrowthColor(
-                              cat.growth
-                            )}`}
-                            style={{ width: `${cat.percentage}%` }}
-                          />
-                        </div>
-                        <span className="font-semibold text-gray-900 text-sm">
-                          {cat.percentage}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-right font-semibold text-gray-900 text-sm">
-                      {cat.units}
-                    </td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="inline-flex items-center gap-1">
-                        {cat.growth >= 0 ? (
-                          <TrendingUp className="text-green-600" size={14} />
-                        ) : (
-                          <TrendingDown className="text-red-600" size={14} />
-                        )}
-                        <span
-                          className={`font-semibold text-sm ${
-                            cat.growth >= 0 ? "text-green-700" : "text-red-700"
-                          }`}
-                        >
-                          {cat.growth >= 0 ? "+" : ""}
-                          {cat.growth}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-sm text-gray-600">
-                      {cat.topProduct}
+                {categories.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-5 py-8 text-center text-gray-500">
+                      No category data available
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  categories.map((cat) => (
+                    <tr
+                      key={cat.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100">
+                            <Tag className="text-gray-500" size={18} />
+                          </div>
+                          <span className="font-semibold text-gray-900 text-sm">
+                            {cat.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-right font-bold text-gray-900 text-sm">
+                        रु{cat.revenue.toLocaleString()}
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${getGrowthColor(
+                                cat.growth
+                              )}`}
+                              style={{ width: `${cat.percentage}%` }}
+                            />
+                          </div>
+                          <span className="font-semibold text-gray-900 text-sm">
+                            {cat.percentage}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-right font-semibold text-gray-900 text-sm">
+                        {cat.units}
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <div className="inline-flex items-center gap-1">
+                          {cat.growth >= 0 ? (
+                            <TrendingUp className="text-green-600" size={14} />
+                          ) : (
+                            <TrendingDown className="text-red-600" size={14} />
+                          )}
+                          <span
+                            className={`font-semibold text-sm ${
+                              cat.growth >= 0 ? "text-green-700" : "text-red-700"
+                            }`}
+                          >
+                            {cat.growth >= 0 ? "+" : ""}
+                            {cat.growth}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-gray-600">
+                        {cat.topProduct}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Pizza,
+  AlertTriangle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -107,6 +108,8 @@ export default function ProductsPage() {
     return defaultProducts;
   });
 
+  const [inventory, setInventory] = useState([]);
+
   const [search, setSearch] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -118,9 +121,19 @@ export default function ProductsPage() {
   const [deleteModal, setDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [bulkDeleteModal, setBulkDeleteModal] = useState(false);
-  const [viewDetailsModal, setViewDetailsModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const itemsPerPage = 8;
+
+  // Load inventory data
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedInventory = localStorage.getItem("inventory");
+      if (storedInventory) {
+        try {
+          setInventory(JSON.parse(storedInventory));
+        } catch {}
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -128,12 +141,56 @@ export default function ProductsPage() {
     }
   }, [products]);
 
+  // Check if product can be made based on inventory
+  const checkInventoryAvailability = (product) => {
+    if (!product.ingredients || product.ingredients.length === 0) {
+      return { canMake: true, missingIngredients: [] };
+    }
+
+    const missingIngredients = [];
+
+    for (const ingredient of product.ingredients) {
+      const inventoryItem = inventory.find(
+        (item) => item.id === ingredient.itemId
+      );
+
+      if (!inventoryItem) {
+        missingIngredients.push({
+          name: ingredient.itemName,
+          reason: "Not in inventory",
+        });
+      } else if (inventoryItem.stock < ingredient.quantity) {
+        missingIngredients.push({
+          name: ingredient.itemName,
+          reason: `Low stock (${inventoryItem.stock} ${inventoryItem.unit} available, need ${ingredient.quantity} ${ingredient.unit})`,
+        });
+      }
+    }
+
+    return {
+      canMake: missingIngredients.length === 0,
+      missingIngredients,
+    };
+  };
+
+  // Get products with inventory status
+  const productsWithInventoryStatus = products.map((product) => {
+    const inventoryCheck = checkInventoryAvailability(product);
+    return {
+      ...product,
+      inventoryAvailable: inventoryCheck.canMake,
+      missingIngredients: inventoryCheck.missingIngredients,
+    };
+  });
+
   const totalProducts = products.length;
-  const availableProducts = products.filter((p) => p.available).length;
+  const availableProducts = productsWithInventoryStatus.filter(
+    (p) => p.available && p.inventoryAvailable
+  ).length;
   const avgProfit =
     products.reduce((sum, p) => sum + (p.price - p.cost), 0) / products.length;
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = productsWithInventoryStatus.filter((product) => {
     const searchLower = search.toLowerCase();
     const matchesSearch =
       product.name.toLowerCase().includes(searchLower) ||
@@ -145,8 +202,11 @@ export default function ProductsPage() {
 
     const matchesAvailability =
       filters.availability === "all" ||
-      (filters.availability === "available" && product.available) ||
-      (filters.availability === "unavailable" && !product.available);
+      (filters.availability === "available" &&
+        product.available &&
+        product.inventoryAvailable) ||
+      (filters.availability === "unavailable" &&
+        (!product.available || !product.inventoryAvailable));
 
     return matchesSearch && matchesCategory && matchesAvailability;
   });
@@ -195,11 +255,6 @@ export default function ProductsPage() {
     }
   };
 
-  const openViewDetails = (product) => {
-    setSelectedProduct(product);
-    setViewDetailsModal(true);
-  };
-
   const exportToCSV = () => {
     const headers = [
       "ID",
@@ -209,6 +264,7 @@ export default function ProductsPage() {
       "Cost",
       "Profit Margin",
       "Available",
+      "Inventory Status",
       "Prep Time",
     ];
     const rows = filteredProducts.map((product) => [
@@ -219,6 +275,7 @@ export default function ProductsPage() {
       product.cost,
       product.price - product.cost,
       product.available ? "Yes" : "No",
+      product.inventoryAvailable ? "In Stock" : "Out of Stock",
       `${product.preparationTime} min`,
     ]);
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
@@ -284,6 +341,9 @@ export default function ProductsPage() {
             <div className="text-2xl font-semibold text-green-600">
               {availableProducts}
             </div>
+            <p className="text-xs text-gray-500 mt-1">
+              With ingredients in stock
+            </p>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -414,6 +474,8 @@ export default function ProductsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {paginatedProducts.map((product) => {
+                  const isFullyAvailable =
+                    product.available && product.inventoryAvailable;
                   return (
                     <tr
                       key={product.id}
@@ -429,8 +491,11 @@ export default function ProductsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center relative">
                             <Pizza className="text-gray-400" size={18} />
+                            {!product.inventoryAvailable && (
+                              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+                            )}
                           </div>
                           <div>
                             <div className="font-medium text-gray-900 text-sm">
@@ -459,20 +524,31 @@ export default function ProductsPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
-                            product.available
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {product.available ? "Available" : "Unavailable"}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`inline-flex px-2 py-1 rounded text-xs font-medium w-fit ${
+                              isFullyAvailable
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {isFullyAvailable ? "Available" : "Unavailable"}
+                          </span>
+                          {!product.inventoryAvailable &&
+                            product.missingIngredients.length > 0 && (
+                              <span className="text-xs text-amber-600 flex items-center gap-1">
+                                <AlertTriangle size={12} />
+                                {product.missingIngredients.length} missing
+                              </span>
+                            )}
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => openViewDetails(product)}
+                            onClick={() =>
+                              router.push(`/products/view/${product.id}`)
+                            }
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="View Details"
                           >
@@ -535,120 +611,6 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
-
-      {viewDetailsModal && selectedProduct && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6 shadow-xl animate-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {selectedProduct.name}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {selectedProduct.description}
-                </p>
-              </div>
-              <button
-                onClick={() => setViewDetailsModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Category</div>
-                <div className="font-medium text-gray-900">
-                  {selectedProduct.category}
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Selling Price</div>
-                <div className="font-medium text-gray-900">
-                  रु{selectedProduct.price}
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Cost</div>
-                <div className="font-medium text-gray-900">
-                  रु{selectedProduct.cost}
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Profit</div>
-                <div className="font-medium text-green-600">
-                  रु{selectedProduct.price - selectedProduct.cost} (
-                  {getProfitMargin(selectedProduct.price, selectedProduct.cost)}
-                  %)
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Prep Time</div>
-                <div className="font-medium text-gray-900">
-                  {selectedProduct.preparationTime} min
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Status</div>
-                <div
-                  className={`font-medium ${
-                    selectedProduct.available
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {selectedProduct.available ? "Available" : "Unavailable"}
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-200 pt-4">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                Ingredients Required
-              </h4>
-              <div className="space-y-2">
-                {selectedProduct.ingredients.map((ing, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between bg-gray-50 rounded-lg p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                        <Package className="text-gray-400" size={14} />
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {ing.itemName}
-                      </span>
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      {ing.quantity} {ing.unit}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setViewDetailsModal(false)}
-                className="flex-1 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-all"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setViewDetailsModal(false);
-                  router.push(`/products/edit/${selectedProduct.id}`);
-                }}
-                className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all"
-              >
-                Edit Product
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {deleteModal && productToDelete && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
